@@ -114,6 +114,14 @@ network_field: &network
   key: network
   name: network
   type: string
+operator_field: &operator
+  key: operator
+  name: operator
+  type: string
+colour_field: &colour
+  key: colour
+  name: colour
+  type: string
 layer_field: &layer
   key: layer
   name: layer
@@ -241,6 +249,8 @@ tables:
       type: string
     - *ref
     - *network
+    - *operator
+    - *colour
     - *z_order
     - *layer
     - *level
@@ -376,15 +386,33 @@ tables:
     columns:
     - name: osm_id
       type: id
+    - name: geometry
+      type: geometry
     - name: member
       type: member_id
+    - name: member_index
+      type: member_index
     - name: role
       type: member_role
     - name: type
       type: member_type
+    - name: member_name
+      key: name
+      type: string
+      from_member: true
+    - name: route
+      key: route
+      type: string
     - *ref
     - *network
     - *name
+    - *colour
     mapping:
       route:
       - road
+      - tram
+      - bus
+      - railway
+      - tracks
+      - train
+      - subway
