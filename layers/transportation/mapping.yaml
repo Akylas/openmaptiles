@@ -343,6 +343,63 @@ tables:
       route:
       - ferry
 
+  # etldoc: imposm3 -> osm_skilift_linestring
+  skilift_linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: aerialway
+      name: aerialway
+      type: string
+    - *z_order
+    - *layer
+    - *name
+    - *name_en
+    - *name_de
+    - name: tags
+      type: hstore_tags
+    - *short_name
+    mapping:
+      aerialway:
+      - drag_lift
+      - t-bar
+      - j-bar
+      - platter
+      - rope_tow
+
+  # etldoc: imposm3 -> osm_skiarea_linestring
+  skiarea_linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: piste:type
+      name: type
+      type: string
+    - key: piste:difficulty
+      name: difficulty
+      type: string
+    - key: piste:grooming
+      name: grooming
+      type: string
+    - *z_order
+    - *layer
+    - *name
+    - *name_en
+    - *name_de
+    - name: tags
+      type: hstore_tags
+    - *short_name
+    mapping:
+      piste:type:
+        - downhill
+        - nordic
+
 # etldoc: imposm3 -> osm_highway_polygon
   highway_polygon:
     type: polygon
