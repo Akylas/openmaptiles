@@ -1,0 +1,30 @@
+layer:
+  id: "cycle_route"
+  description: Cycle routes.
+  buffer_size: 64
+  srs: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over
+  fields:
+    type:
+      values:
+        - point
+        - path
+    network:
+      values:
+        - lcn
+        - ncn
+        - icn
+        - rcn
+        - lwn
+    ref:
+    relation_name:
+  datasource:
+    geometry_field: geometry
+    key_field: osm_id
+    key_field_as_attribute: no
+    srid: 900913
+    query: (SELECT osm_id, geometry, type, network, ref, relation_name FROM layer_cycle_route(!bbox!, z(!scale_denominator!))) AS t
+schema:
+  - ./layer.sql
+datasources:
+  - type: imposm3
+    mapping_file: ../transportation/mapping.yaml
