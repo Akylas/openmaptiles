@@ -1,6 +1,7 @@
 -- etldoc: layer_ski_area[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="layer_ski_area | <z10_> z10+" ] ;
 
+DROP FUNCTION IF EXISTS layer_ski_area(geometry, integer);
 CREATE OR REPLACE FUNCTION layer_ski_area(bbox geometry, zoom_level integer)
 RETURNS TABLE(
 		osm_id bigint,

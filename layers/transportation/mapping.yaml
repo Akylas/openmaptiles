@@ -54,6 +54,16 @@ generalized_tables:
     sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link')) AND NOT is_area AND ST_IsValid(geometry)
     tolerance: ZRES12
 
+# etldoc: imposm3 -> osm_route_member_gen2
+  route_member_gen2:
+    source: route_member_gen1
+    tolerance: ZRES12
+
+# etldoc: imposm3 -> osm_route_member_gen1
+  route_member_gen1:
+    source: route_member
+    tolerance: ZRES13
+
 name_field: &name
   name: name
   key: name

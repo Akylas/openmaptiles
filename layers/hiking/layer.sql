@@ -16,8 +16,9 @@ CREATE OR REPLACE FUNCTION convert_symbol_to_colour(symbol text) RETURNS text AS
 $$ LANGUAGE SQL IMMUTABLE STRICT;
 
 -- etldoc: layer_hiking[shape=record fillcolor=lightpink, style="rounded,filled",
--- etldoc:     label="layer_hiking | <z10_> z10+" ] ;
+-- etldoc:     label="layer_hiking | <z10_11> z10-11| <z12_13> z12-13 | <z14_> z14+" ] ;
 
+DROP FUNCTION IF EXISTS layer_hiking(geometry, integer);
 CREATE OR REPLACE FUNCTION layer_hiking(bbox geometry, zoom_level integer)
 RETURNS TABLE(
 		osm_id bigint,
@@ -35,7 +36,36 @@ RETURNS TABLE(
         relation_name,
         colour
     FROM (
-        -- etldoc: osm_route_member -> layer_hiking:z10_
+        -- etldoc: osm_route_member -> layer_hiking:z10_11
+        SELECT
+            osm_id,
+	        geometry,
+	        convert_type(type) as type,
+	        member_name,
+	        name as relation_name,
+	        convert_symbol_to_colour(symbol) as colour
+	    FROM osm_route_member_gen2
+           WHERE zoom_level >= 10 AND zoom_level <= 11
+			AND route = 'hiking'
+			AND type = 1
+
+		UNION ALL
+
+        -- etldoc: osm_route_member -> layer_hiking:z12_13
+        SELECT
+            osm_id,
+	        geometry,
+	        convert_type(type) as type,
+	        member_name,
+	        name as relation_name,
+	        convert_symbol_to_colour(symbol) as colour
+	    FROM osm_route_member_gen1
+           WHERE zoom_level >= 12 AND zoom_level <= 13
+			AND route = 'hiking'
+
+		UNION ALL
+
+        -- etldoc: osm_route_member -> layer_hiking:z14_
         SELECT
             osm_id,
 	        geometry,
@@ -44,7 +74,7 @@ RETURNS TABLE(
 	        name as relation_name,
 	        convert_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member
-           WHERE zoom_level >= 10
+           WHERE zoom_level >= 14
 			AND route = 'hiking'
     ) AS zoom_levels
     WHERE geometry && bbox;

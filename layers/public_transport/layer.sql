@@ -13,8 +13,9 @@ CREATE OR REPLACE FUNCTION convert_route(route text) RETURNS text AS $$
 $$ LANGUAGE SQL IMMUTABLE STRICT;
 
 -- etldoc: layer_public_transport[shape=record fillcolor=lightpink, style="rounded,filled",
--- etldoc:     label="layer_public_transport | <z12_> z12+" ] ;
+-- etldoc:     label="layer_public_transport | <z10> z10 |<z11> z11 | <z12_13> z12-13 | <z14_> z14+" ] ;
 
+DROP FUNCTION IF EXISTS layer_public_transport(geometry, integer);
 CREATE OR REPLACE FUNCTION layer_public_transport(bbox geometry, zoom_level integer)
 RETURNS TABLE(
 		osm_id bigint,
@@ -36,7 +37,57 @@ RETURNS TABLE(
         relation_name,
         colour
     FROM (
-        -- etldoc: osm_route_member -> layer_public_transport:z12_
+        -- etldoc: osm_route_member -> layer_public_transport:z10
+        SELECT
+            osm_id,
+	        geometry,
+	        convert_route(route) as route,
+	        convert_type(type) as type,
+	        ref,
+	        member_name,
+	        name as relation_name,
+	        colour
+	    FROM osm_route_member_gen2
+           WHERE zoom_level = 10
+			AND route IN ('railway', 'tracks', 'train')
+            AND type = 1
+
+		UNION ALL
+
+        -- etldoc: osm_route_member -> layer_public_transport:z11
+        SELECT
+            osm_id,
+	        geometry,
+	        convert_route(route) as route,
+	        convert_type(type) as type,
+	        ref,
+	        member_name,
+	        name as relation_name,
+	        colour
+	    FROM osm_route_member_gen2
+           WHERE zoom_level = 11
+			AND route IN ('railway', 'tracks', 'train', 'subway')
+			AND type = 1
+
+		UNION ALL
+
+        -- etldoc: osm_route_member -> layer_public_transport:z12_13
+        SELECT
+            osm_id,
+	        geometry,
+	        convert_route(route) as route,
+	        convert_type(type) as type,
+	        ref,
+	        member_name,
+	        name as relation_name,
+	        colour
+	    FROM osm_route_member_gen1
+           WHERE zoom_level >= 12 AND zoom_level <= 13
+			AND route IN ('railway', 'tracks', 'train', 'subway', 'tram', 'bus')
+
+		UNION ALL
+
+        -- etldoc: osm_route_member -> layer_public_transport:z14_
         SELECT
             osm_id,
 	        geometry,
@@ -47,8 +98,8 @@ RETURNS TABLE(
 	        name as relation_name,
 	        colour
 	    FROM osm_route_member
-           WHERE zoom_level >= 12
-			AND route IN ('tracks', 'bus', 'railway', 'subway', 'tram', 'train')
+           WHERE zoom_level >= 14
+			AND route IN ('railway', 'tracks', 'train', 'subway', 'tram', 'bus')
     ) AS zoom_levels
     WHERE geometry && bbox;
 $$ LANGUAGE SQL IMMUTABLE;

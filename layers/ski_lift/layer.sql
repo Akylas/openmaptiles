@@ -1,6 +1,7 @@
 -- etldoc: layer_ski_lift[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="layer_ski_lift | <z12_> z12+" ] ;
 
+DROP FUNCTION IF EXISTS layer_ski_lift(geometry, integer);
 CREATE OR REPLACE FUNCTION layer_ski_lift(bbox geometry, zoom_level integer)
 RETURNS TABLE(
 		osm_id bigint,

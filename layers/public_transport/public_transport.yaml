@@ -18,7 +18,6 @@ layer:
     member_name:
     relation_name:
     colour:
-    oneway:
   datasource:
     geometry_field: geometry
     key_field: osm_id
