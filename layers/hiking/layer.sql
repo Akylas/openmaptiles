@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION convert_type(type smallint) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_hiking_type(type smallint) RETURNS text AS $$
     SELECT CASE
         WHEN type = 0 THEN 'point'
         WHEN type = 1 THEN 'path'
     END;
 $$ LANGUAGE SQL IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION convert_symbol_to_colour(symbol text) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_hiking_symbol_to_colour(symbol text) RETURNS text AS $$
     SELECT CASE
         WHEN symbol LIKE 'green:white:green_%' THEN 'green'
         WHEN symbol LIKE 'blue:white:blue_%' THEN 'blue'
@@ -40,10 +40,10 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) as type,
+	        convert_hiking_type(type) as type,
 	        member_name,
 	        name as relation_name,
-	        convert_symbol_to_colour(symbol) as colour
+	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member_gen2
            WHERE zoom_level >= 10 AND zoom_level <= 11
 			AND route = 'hiking'
@@ -55,10 +55,10 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) as type,
+	        convert_hiking_type(type) as type,
 	        member_name,
 	        name as relation_name,
-	        convert_symbol_to_colour(symbol) as colour
+	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member_gen1
            WHERE zoom_level >= 12 AND zoom_level <= 13
 			AND route = 'hiking'
@@ -69,10 +69,10 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) as type,
+	        convert_hiking_type(type) as type,
 	        member_name,
 	        name as relation_name,
-	        convert_symbol_to_colour(symbol) as colour
+	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member
            WHERE zoom_level >= 14
 			AND route = 'hiking'

@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION convert_type(type smallint) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_cycle_route_type(type smallint) RETURNS text AS $$
     SELECT CASE
         WHEN type = 0 THEN 'point'
         WHEN type = 1 THEN 'path'
     END;
 $$ LANGUAGE SQL IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION convert_ref(ref text, name text) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_cycle_route_ref(ref text, name text) RETURNS text AS $$
     SELECT CASE
         WHEN name = ref THEN ''
         WHEN STRPOS(name, CONCAT(ref, ' ')) = 1 THEN ''
@@ -39,9 +39,9 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) AS type,
+	        convert_cycle_route_type(type) AS type,
 	        network,
-	        convert_ref(ref, name) AS ref,
+	        convert_cycle_route_ref(ref, name) AS ref,
 	        name AS relation_name
 	    FROM osm_route_member_gen2
            WHERE zoom_level >= 10 AND zoom_level <= 11
@@ -54,9 +54,9 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) AS type,
+	        convert_cycle_route_type(type) AS type,
 	        network,
-	        convert_ref(ref, name) AS ref,
+	        convert_cycle_route_ref(ref, name) AS ref,
 	        name AS relation_name
 	    FROM osm_route_member_gen1
            WHERE zoom_level >= 12 AND zoom_level <= 13
@@ -68,9 +68,9 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_type(type) AS type,
+	        convert_cycle_route_type(type) AS type,
 	        network,
-	        convert_ref(ref, name) AS ref,
+	        convert_cycle_route_ref(ref, name) AS ref,
 	        name AS relation_name
 	    FROM osm_route_member
            WHERE zoom_level >= 14

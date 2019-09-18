@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION convert_type(type smallint) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_public_transport_type(type smallint) RETURNS text AS $$
     SELECT CASE
         WHEN type = 0 THEN 'station'
         WHEN type = 1 THEN 'path'
     END;
 $$ LANGUAGE SQL IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION convert_route(route text) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION convert_public_transport_route(route text) RETURNS text AS $$
     SELECT CASE
         WHEN route IN ('tracks', 'train') THEN 'railway'
         ELSE route
@@ -41,8 +41,8 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_route(route) as route,
-	        convert_type(type) as type,
+	        convert_public_transport_route(route) as route,
+	        convert_public_transport_type(type) as type,
 	        ref,
 	        member_name,
 	        name as relation_name,
@@ -58,8 +58,8 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_route(route) as route,
-	        convert_type(type) as type,
+	        convert_public_transport_route(route) as route,
+	        convert_public_transport_type(type) as type,
 	        ref,
 	        member_name,
 	        name as relation_name,
@@ -75,8 +75,8 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_route(route) as route,
-	        convert_type(type) as type,
+	        convert_public_transport_route(route) as route,
+	        convert_public_transport_type(type) as type,
 	        ref,
 	        member_name,
 	        name as relation_name,
@@ -91,8 +91,8 @@ RETURNS TABLE(
         SELECT
             osm_id,
 	        geometry,
-	        convert_route(route) as route,
-	        convert_type(type) as type,
+	        convert_public_transport_route(route) as route,
+	        convert_public_transport_type(type) as type,
 	        ref,
 	        member_name,
 	        name as relation_name,
