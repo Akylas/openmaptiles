@@ -67,6 +67,8 @@ CREATE INDEX IF NOT EXISTS osm_route_member_network_idx ON osm_route_member("net
 CREATE INDEX IF NOT EXISTS osm_route_member_member_idx ON osm_route_member("member");
 CREATE INDEX IF NOT EXISTS osm_route_member_name_idx ON osm_route_member("name");
 CREATE INDEX IF NOT EXISTS osm_route_member_ref_idx ON osm_route_member("ref");
+CREATE INDEX IF NOT EXISTS osm_route_member_route_idx ON osm_route_member("route");
+CREATE INDEX IF NOT EXISTS osm_route_member_type_idx ON osm_route_member("type");
 
 SELECT update_osm_route_member();
 
