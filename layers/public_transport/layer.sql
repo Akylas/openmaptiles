@@ -92,7 +92,7 @@ RETURNS TABLE(
         UNION ALL
 
         SELECT
-            osm_id,
+            MIN(osm_id) AS osm_id,
             geometry,
             convert_public_transport_route(route) as route,
             convert_public_transport_type(type) as type,
@@ -103,6 +103,7 @@ RETURNS TABLE(
         FROM osm_route_member_gen1
            WHERE zoom_level >= 12 AND zoom_level <= 13
             AND route IN ('railway', 'tracks', 'train', 'subway', 'tram', 'bus')
+            GROUP BY member, geometry, route, type, ref, member_name, name, colour
 
         UNION ALL
 
@@ -125,7 +126,7 @@ RETURNS TABLE(
         UNION ALL
 
         SELECT
-            osm_id,
+            MIN(osm_id) AS osm_id,
             geometry,
             convert_public_transport_route(route) as route,
             convert_public_transport_type(type) as type,
@@ -136,6 +137,7 @@ RETURNS TABLE(
         FROM osm_route_member
            WHERE zoom_level >= 14
             AND route IN ('railway', 'tracks', 'train', 'subway', 'tram', 'bus')
+            GROUP BY member, geometry, route, type, ref, member_name, name, colour
     ) AS zoom_levels
     WHERE geometry && bbox;
 $$ LANGUAGE SQL IMMUTABLE;
