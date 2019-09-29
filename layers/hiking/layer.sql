@@ -46,7 +46,7 @@ RETURNS TABLE(
 	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member_gen2
            WHERE zoom_level >= 10 AND zoom_level <= 11
-			AND route = 'hiking'
+			AND route IN ('hiking', 'foot')
 			AND type = 1
 
 		UNION ALL
@@ -61,7 +61,7 @@ RETURNS TABLE(
 	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member_gen1
            WHERE zoom_level >= 12 AND zoom_level <= 13
-			AND route = 'hiking'
+			AND route IN ('hiking', 'foot')
 
 		UNION ALL
 
@@ -75,7 +75,7 @@ RETURNS TABLE(
 	        convert_hiking_symbol_to_colour(symbol) as colour
 	    FROM osm_route_member
            WHERE zoom_level >= 14
-			AND route = 'hiking'
+			AND route IN ('hiking', 'foot')
     ) AS zoom_levels
     WHERE geometry && bbox;
 $$ LANGUAGE SQL IMMUTABLE;
