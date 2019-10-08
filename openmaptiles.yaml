@@ -33,7 +33,6 @@ tileset:
   pixel_scale: 256
   languages:
     - cs # Czech, Latin
-    - de # German, Latin
     - en # English, Latin
     - sk # Slovak, Latin
     - pl # Polish, Latin
