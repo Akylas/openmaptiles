@@ -84,10 +84,10 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
                   COALESCE(nullif(as_numeric(obp.min_level),-1),nullif(as_numeric(obp.buildingmin_level),-1)) as min_level,
                   nullif(obp.material, '') AS material,
                   nullif(obp.colour, '') AS colour,
-                  CASE WHEN obr.role='outline' THEN TRUE ELSE FALSE END as hide_3d
+                  obr.role IS NOT NULL as hide_3d
          FROM
          osm_building_polygon obp
-           LEFT JOIN osm_building_relation obr ON (obr.member = obp.osm_id)
+           LEFT JOIN osm_building_relation obr ON obr.member = obp.osm_id AND obr.role = 'outline'
          WHERE obp.osm_id >= 0
 );
 
