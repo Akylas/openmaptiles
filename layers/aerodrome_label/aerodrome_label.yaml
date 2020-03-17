@@ -7,7 +7,6 @@ layer:
   fields:
     name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the aerodrome.
     name_en: English name `name:en` if available, otherwise `name`.
-    name_de: German name `name:de` if available, otherwise `name` or `name:en`.
     class:
       description: |
           Distinguish between more and less important aerodromes.
@@ -35,13 +34,12 @@ layer:
     iata: 3-character code issued by the IATA.
     icao: 4-letter code issued by the ICAO.
     ele: Elevation (`ele`) in meters.
-    ele_ft: Elevation (`ele`) in feets.
   datasource:
     geometry_field: geometry
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, name, name_en, name_de, {name_languages}, class, iata, icao, ele, ele_ft FROM layer_aerodrome_label (!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT osm_id, geometry, name, name_en, {name_languages}, class, iata, icao, ele FROM layer_aerodrome_label (!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./update.sql
   - ./layer.sql

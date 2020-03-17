@@ -87,6 +87,9 @@ tables:
       - beach
       - sand
       - dune
+      - cliff
+      - rock
+      - stone
       leisure:
       - park
       - garden

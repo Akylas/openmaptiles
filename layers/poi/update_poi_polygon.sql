@@ -14,16 +14,16 @@ BEGIN
   WHERE ST_GeometryType(geometry) <> 'ST_Point';
 
   UPDATE osm_poi_polygon
-  SET subclass = 'subway'
-  WHERE station = 'subway' and subclass='station';
+    SET subclass = 'subway'
+    WHERE station = 'subway' and subclass='station';
 
   UPDATE osm_poi_polygon
     SET subclass = 'halt'
     WHERE funicular = 'yes' and subclass='station';
 
   UPDATE osm_poi_polygon
-  SET tags = update_tags(tags, geometry)
-  WHERE COALESCE(tags->'name:latin', tags->'name:nonlatin', tags->'name_int') IS NULL;
+    SET tags = update_tags(tags, geometry)
+    WHERE COALESCE(tags->'name:latin', tags->'name:nonlatin', tags->'name_int') IS NULL;
 
   ANALYZE osm_poi_polygon;
 END;

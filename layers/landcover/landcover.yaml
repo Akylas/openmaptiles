@@ -17,7 +17,7 @@ layer:
         wood:
           subclass: ['wood', 'forest']
         rock:
-          subclass: ['bare_rock', 'scree']
+          subclass: ['bare_rock', 'scree', 'cliff', 'rock', 'stone']
         grass:
           subclass: ['fell', 'grassland', 'heath', 'scrub', 'tundra', 'grass', 'meadow', 'allotments', 'park', 'village_green', 'recreation_ground', 'garden', 'golf_course']
         wetland:
@@ -38,6 +38,9 @@ layer:
       - beach
       - bog
       - dune
+      - cliff
+      - rock
+      - stone
       - scrub
       - farm
       - farmland
