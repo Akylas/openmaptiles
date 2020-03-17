@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION layer_mountain_peak(
     osm_id bigint,
     geometry geometry,
     name text,
-    name_en text,
+    wikidata text,
     class text,
     tags hstore,
     ele int,
@@ -21,29 +21,29 @@ $$
     osm_id,
     geometry,
     name,
-    name_en,
+    wikidata,
     tags -> 'natural' AS class,
     tags,
     ele::int,
     rank::int FROM (
-      SELECT osm_id, geometry, name,
-      COALESCE(NULLIF(name_en, ''), name) AS name_en,
-      tags,
+      SELECT osm_id, geometry, name, wikidata, tags,
       substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
       row_number() OVER (
           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
           ORDER BY (
-            substring(ele from E'^(-?\\d+)(\\D|$)')::int +
+            (CASE WHEN ele is not null AND ele ~ E'^-?\\d{1,4}(\\D|$)' THEN substring(ele from E'^(-?\\d+)(\\D|$)')::int ELSE 0 END) +
             (CASE WHEN NULLIF(wikipedia, '') is not null THEN 10000 ELSE 0 END) +
             (CASE WHEN NULLIF(name, '') is not null THEN 10000 ELSE 0 END)
           ) DESC
       )::int AS "rank"
       FROM osm_peak_point
       WHERE geometry && bbox
-        AND ele is not null
-        AND ele ~ E'^-?\\d{1,4}(\\D|$)'
     ) AS ranked_peaks
-  WHERE zoom_level >= 7 AND (rank <= 5 OR zoom_level >= 14)
+  WHERE
+    (zoom_level >= 7 AND rank <= 1 AND ele is not null) OR
+    (zoom_level >= 9 AND rank <= 3 AND ele is not null) OR
+    (zoom_level >= 11 AND rank <= 5 AND ele is not null) OR
+    (zoom_level >= 14)
   ORDER BY "rank" ASC;
 
 $$

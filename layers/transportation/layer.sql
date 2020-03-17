@@ -166,7 +166,24 @@ indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT,
             z_order
         FROM osm_highway_linestring
         WHERE NOT is_area AND (
-            zoom_level >= 12 AND man_made <> 'pier'
+            zoom_level = 12
+                AND (
+                    man_made <> 'pier'
+                OR
+                    NOT ST_IsClosed(geometry)
+                )
+            OR zoom_level = 13
+                AND (
+                    man_made <> 'pier'
+                OR
+                    NOT ST_IsClosed(geometry)
+                )
+            OR zoom_level >= 14
+                AND (
+                    man_made <> 'pier'
+                OR
+                    NOT ST_IsClosed(geometry)
+                )
         )
         UNION ALL
 

@@ -11,9 +11,6 @@ tables:
     - name: name
       key: name
       type: string
-    - name: name_en
-      key: name:en
-      type: string
     - name: tags
       type: hstore_tags
     - name: ele
@@ -22,7 +19,12 @@ tables:
     - name: wikipedia
       key: wikipedia
       type: string
+    - name: wikidata
+      key: wikidata
+      type: string
     mapping:
       natural:
       - peak
       - volcano
+      - spring
+      - saddle

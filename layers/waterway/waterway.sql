@@ -42,15 +42,16 @@ CREATE OR REPLACE VIEW waterway_z10 AS (
 
 -- etldoc:osm_important_waterway_linestring_gen1 ->  waterway_z11
 CREATE OR REPLACE VIEW waterway_z11 AS (
-    SELECT geometry, 'river'::text AS class, name, name_en, tags, NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel, NULL::boolean AS is_intermittent
-    FROM osm_important_waterway_linestring_gen1
+    SELECT geometry, waterway::text AS class, name, name_en, name_de, tags, is_bridge, is_tunnel, is_intermittent
+    FROM osm_waterway_linestring
+    WHERE waterway IN ('river', 'canal', 'stream')
 );
 
 -- etldoc: osm_waterway_linestring ->  waterway_z12
 CREATE OR REPLACE VIEW waterway_z12 AS (
     SELECT geometry, waterway::text AS class, name, name_en, tags, is_bridge, is_tunnel, is_intermittent
     FROM osm_waterway_linestring
-    WHERE waterway IN ('river', 'canal')
+    WHERE waterway IN ('river', 'canal', 'stream')
 );
 
 -- etldoc: osm_waterway_linestring ->  waterway_z13
