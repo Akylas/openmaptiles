@@ -77,6 +77,10 @@ CREATE OR REPLACE VIEW landcover_z14 AS (
     -- etldoc: osm_landcover_polygon ->  landcover_z14
     SELECT osm_id, geometry, subclass FROM osm_landcover_polygon
 );
+CREATE OR REPLACE VIEW landcover_linestring AS (
+    -- etldoc: osm_landcover_linestring ->  landcover_linestring
+    SELECT osm_id, geometry, subclass FROM osm_landcover_linestring
+);
 
 -- etldoc: layer_landcover[shape=record fillcolor=lightpink, style="rounded, filled", label="layer_landcover | <z0_1> z0-z1 | <z2_4> z2-z4 | <z5_6> z5-z6 |<z7> z7 |<z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
@@ -129,6 +133,9 @@ RETURNS TABLE(osm_id bigint, geometry geometry, class text, subclass text) AS $$
         -- etldoc:  landcover_z14 -> layer_landcover:z14_
         SELECT *
         FROM landcover_z14 WHERE zoom_level >= 14 AND geometry && bbox
+        -- etldoc:  landcover_linestring -> layer_landcover:z14_
+        SELECT *
+        FROM landcover_linestring WHERE zoom_level >= 14 AND geometry && bbox
     ) AS zoom_levels;
 $$
 LANGUAGE SQL
