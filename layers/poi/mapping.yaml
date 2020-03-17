@@ -30,6 +30,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - ferry_terminal
   - fire_station
   - food_court
+  - fountain
   - fuel
   - grave_yard
   - hospital
@@ -61,7 +62,6 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - townhall
   - university
   - veterinary
-  - waste_basket
 
 # barrier values , see http://taginfo.openstreetmap.org/keys/barrier#values
 def_poi_mapping_barrier: &poi_mapping_barrier
