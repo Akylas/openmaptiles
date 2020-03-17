@@ -12,6 +12,11 @@ tileset:
     - layers/building/building.yaml
     - layers/water_name/water_name.yaml
     - layers/transportation_name/transportation_name.yaml
+    - layers/public_transport/public_transport.yaml
+    - layers/ski_area/ski_area.yaml
+    - layers/ski_lift/ski_lift.yaml
+    - layers/cycle_route/cycle_route.yaml
+    - layers/hiking/hiking.yaml
     - layers/place/place.yaml
     - layers/housenumber/housenumber.yaml
     - layers/poi/poi.yaml

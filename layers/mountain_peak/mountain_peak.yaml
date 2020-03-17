@@ -11,8 +11,8 @@ layer:
       description: |
         Use the **class** to differentiate between mountain peak, volcano, spring, and saddle.
       values:
-        - peak
-        - volcano
+      - peak
+      - volcano
         - saddle
         - spring
     ele: Elevation (`ele`) in meters.

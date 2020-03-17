@@ -9,6 +9,9 @@ data.xml
 *.swp
 *.pbf
 
+# .env
+.env
+
 # quickstart
 quickstart.log
 

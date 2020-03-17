@@ -54,6 +54,16 @@ generalized_tables:
     sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link', 'tertiary_link')) AND NOT is_area AND ST_IsValid(geometry)
     tolerance: ZRES12
 
+# etldoc: imposm3 -> osm_route_member_gen2
+  route_member_gen2:
+    source: route_member_gen1
+    tolerance: ZRES12
+
+# etldoc: imposm3 -> osm_route_member_gen1
+  route_member_gen1:
+    source: route_member
+    tolerance: ZRES13
+
 name_field: &name
   name: name
   key: name
@@ -109,6 +119,14 @@ ref_field: &ref
 network_field: &network
   key: network
   name: network
+  type: string
+operator_field: &operator
+  key: operator
+  name: operator
+  type: string
+colour_field: &colour
+  key: colour
+  name: colour
   type: string
 layer_field: &layer
   key: layer
@@ -171,6 +189,9 @@ tables:
       key: construction
       type: string
     - *ref
+    - name: int_ref
+      key: int_ref
+      type: string
     - *network
     - *z_order
     - *layer
@@ -243,6 +264,8 @@ tables:
       type: string
     - *ref
     - *network
+    - *operator
+    - *colour
     - *z_order
     - *layer
     - *level
@@ -334,6 +357,61 @@ tables:
       route:
       - ferry
 
+  # etldoc: imposm3 -> osm_skilift_linestring
+  skilift_linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: aerialway
+      name: aerialway
+      type: string
+    - *z_order
+    - *layer
+    - *name
+    - *name_en
+    - name: tags
+      type: hstore_tags
+    - *short_name
+    mapping:
+      aerialway:
+      - drag_lift
+      - t-bar
+      - j-bar
+      - platter
+      - rope_tow
+
+  # etldoc: imposm3 -> osm_skiarea_linestring
+  skiarea_linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: piste:type
+      name: type
+      type: string
+    - key: piste:difficulty
+      name: difficulty
+      type: string
+    - key: piste:grooming
+      name: grooming
+      type: string
+    - *z_order
+    - *layer
+    - *name
+    - *name_en
+    - name: tags
+      type: hstore_tags
+    - *short_name
+    mapping:
+      piste:type:
+        - downhill
+        - nordic
+
 # etldoc: imposm3 -> osm_highway_polygon
   highway_polygon:
     type: polygon
@@ -370,22 +448,45 @@ tables:
       - bridge
       - pier
 
-# TODO: Future table for joining networks
 # etldoc: imposm3 -> osm_route_member
   route_member:
     type: relation_member
     columns:
     - name: osm_id
       type: id
+    - name: geometry
+      type: geometry
     - name: member
       type: member_id
+    - name: member_index
+      type: member_index
     - name: role
       type: member_role
     - name: type
       type: member_type
+    - name: member_name
+      key: name
+      type: string
+      from_member: true
+    - name: route
+      key: route
+      type: string
     - *ref
     - *network
     - *name
+    - *colour
+    - name: symbol
+      key: osmc:symbol
+      type: string
     mapping:
       route:
       - road
+      - tram
+      - bus
+      - railway
+      - tracks
+      - train
+      - subway
+      - hiking
+      - foot
+      - bicycle

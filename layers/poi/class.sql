@@ -4,6 +4,8 @@ RETURNS INT AS $$
         WHEN 'hospital' THEN 20
         WHEN 'railway' THEN 40
         WHEN 'bus' THEN 50
+        WHEN 'tram' THEN 50
+        WHEN 'subway' THEN 50
         WHEN 'attraction' THEN 70
         WHEN 'harbor' THEN 75
         WHEN 'college' THEN 80
