@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS osm_building_relation_member_idx ON osm_building_rela
 CREATE OR REPLACE VIEW osm_all_buildings AS (
          -- etldoc: osm_building_relation -> layer_building:z14_
          -- Buildings built from relations
-         SELECT member AS osm_id,geometry,
+         SELECT member AS osm_id,geometry,name,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -35,7 +35,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
          -- etldoc: osm_building_associatedstreet -> layer_building:z14_
          -- Buildings in associatedstreet relations
-         SELECT member AS osm_id,geometry,
+         SELECT member AS osm_id,geometry,name,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -48,7 +48,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          UNION ALL
          -- etldoc: osm_building_street -> layer_building:z14_
          -- Buildings in street relations
-         SELECT member AS osm_id,geometry,
+         SELECT member AS osm_id,geometry,name,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,

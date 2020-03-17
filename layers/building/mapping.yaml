@@ -5,6 +5,11 @@ generalized_tables:
     sql_filter: area>power(ZRES12,2) AND ST_IsValid(geometry)
     tolerance: ZRES14
 
+name_field: &name
+  name: name
+  key: name
+  type: string
+
 tables:
   # etldoc: imposm3 -> osm_building_polygon
   building_polygon:
@@ -13,6 +18,7 @@ tables:
       type: id
     - name: geometry
       type: validated_geometry
+    - *name
     - name: area
       type: area
     - name: material
@@ -74,6 +80,7 @@ tables:
       type: id
     - name: geometry
       type: validated_geometry
+    - *name
     - name: area
       type: area
     - name: building
@@ -157,7 +164,8 @@ tables:
       type: member_type
     mapping:
       type: [street]
-    type: relation_member
+    filters:
+      type: relation_member
 
   # etldoc: imposm3 -> osm_building_associatedstreet
   building_associatedstreet:
@@ -166,6 +174,7 @@ tables:
       type: id
     - name: geometry
       type: validated_geometry
+    - *name
     - name: area
       type: area
     - name: building
@@ -249,7 +258,8 @@ tables:
       type: member_type
     mapping:
       type: [associatedStreet]
-    type: relation_member
+    filters:
+     type: relation_member
 
   # etldoc: imposm3 -> osm_building_relation
   building_relation:
@@ -258,6 +268,7 @@ tables:
       type: id
     - name: geometry
       type: validated_geometry
+    - *name
     - name: area
       type: area
     - name: building
@@ -341,4 +352,5 @@ tables:
       type: member_type
     mapping:
       type: [building]
-    type: relation_member
+    filters:
+      type: relation_member
