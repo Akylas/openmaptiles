@@ -15,7 +15,6 @@ CREATE OR REPLACE FUNCTION layer_mountain_peak(
     tags hstore,
     ele int,
     "rank" int) AS
-    ele_ft int,
 $$
    -- etldoc: osm_peak_point -> layer_mountain_peak:z7_
   SELECT
@@ -28,14 +27,12 @@ $$
     ele::int,
     rank::int FROM (
       SELECT osm_id, geometry, name,
-    ele_ft::int,
       COALESCE(NULLIF(name_en, ''), name) AS name_en,
       tags,
       substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
       row_number() OVER (
           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
           ORDER BY (
-      round(substring(ele from E'^(-?\\d+)(\\D|$)')::int*3.2808399)::int AS ele_ft,
             substring(ele from E'^(-?\\d+)(\\D|$)')::int +
             (CASE WHEN NULLIF(wikipedia, '') is not null THEN 10000 ELSE 0 END) +
             (CASE WHEN NULLIF(name, '') is not null THEN 10000 ELSE 0 END)
