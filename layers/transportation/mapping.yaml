@@ -145,6 +145,10 @@ mtb_scale_field: &mtb_scale
   key: mtb:scale
   name: mtb_scale
   type: string
+sac_scale_field: &sac_scale
+  key: sac_scale
+  name: sac_scale
+  type: string
 surface_field: &surface
   key: surface
   name: surface
@@ -191,6 +195,7 @@ tables:
     - *foot
     - *horse
     - *mtb_scale
+    - *sac_scale
     - *surface
     mapping:
       highway:
