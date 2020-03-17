@@ -62,7 +62,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
          -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Buildings that are from multipolygons
-         SELECT osm_id,geometry,
+         SELECT osm_id,geometry,name,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -77,7 +77,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          UNION ALL
          -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Standalone buildings
-         SELECT obp.osm_id,obp.geometry,
+         SELECT obp.osm_id,obp.geometry,name,
                   COALESCE(nullif(as_numeric(obp.height),-1),nullif(as_numeric(obp.buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(obp.min_height),-1),nullif(as_numeric(obp.buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(obp.levels),-1),nullif(as_numeric(obp.buildinglevels),-1)) as levels,
@@ -92,7 +92,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 );
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
-RETURNS TABLE(geometry geometry, osm_id bigint, render_height int, render_min_height int, colour text, hide_3d boolean) AS $$
+RETURNS TABLE(geometry geometry, osm_id bigint, name text, render_height int, render_min_height int, colour text, hide_3d boolean) AS $$
     SELECT geometry, osm_id, render_height, render_min_height,
        COALESCE(colour, CASE material
            -- Ordered by count from taginfo
@@ -118,7 +118,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, render_height int, render_min_he
     FROM (
         -- etldoc: osm_building_polygon_gen1 -> layer_building:z13
         SELECT
-            osm_id, geometry,
+            osm_id, geometry, name,
             NULL::int AS render_height, NULL::int AS render_min_height,
             NULL::text AS material, NULL::text AS colour,
             FALSE AS hide_3d
@@ -127,7 +127,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, render_height int, render_min_he
         UNION ALL
         -- etldoc: osm_building_polygon -> layer_building:z14_
         SELECT DISTINCT ON (osm_id)
-           osm_id, geometry,
+           osm_id, geometry, name,
            ceil( COALESCE(height, levels*3.66,5))::int AS render_height,
            floor(COALESCE(min_height, min_level*3.66,0))::int AS render_min_height,
            material,
