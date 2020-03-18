@@ -3,7 +3,7 @@
 -- etldoc:     label="layer_poi | <z12> z12 | <z13> z13 | <z14_> z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_poi(bbox geometry, zoom_level integer, pixel_width numeric)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, class text, subclass text, agg_stop integer, layer integer, level integer, indoor integer, "rank" int) AS $$
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, class text, subclass text, agg_stop integer, layer integer, level integer, capacity integer, indoor integer, "rank" int) AS $$
     SELECT osm_id_hash AS osm_id, geometry, NULLIF(name, '') AS name,
         COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
@@ -20,6 +20,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
         agg_stop,
         NULLIF(layer, 0) AS layer,
         "level",
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
         CASE WHEN indoor=TRUE THEN 1 END as indoor,
         row_number() OVER (
             PARTITION BY LabelGrid(geometry, 100 * pixel_width)

@@ -14,6 +14,7 @@ RETURNS INT AS $$
         WHEN 'zoo' THEN 95
         WHEN 'town_hall' THEN 100
         WHEN 'campsite' THEN 110
+        WHEN 'lodging' THEN 113
         WHEN 'cemetery' THEN 115
         WHEN 'park' THEN 120
         WHEN 'library' THEN 130

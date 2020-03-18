@@ -112,8 +112,8 @@ tables:
       - mangrove
     type: polygon
 
- # etldoc: imposm3 -> osm_landcover_linestring
-  landcover_linestring:
+ # etldoc: imposm3 -> osm_natural_linestring
+  natural_linestring:
     type: linestring
     columns:
     - name: osm_id

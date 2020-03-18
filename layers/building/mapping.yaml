@@ -164,8 +164,7 @@ tables:
       type: member_type
     mapping:
       type: [street]
-    filters:
-      type: relation_member
+    type: relation_member
 
   # etldoc: imposm3 -> osm_building_associatedstreet
   building_associatedstreet:
@@ -258,8 +257,7 @@ tables:
       type: member_type
     mapping:
       type: [associatedStreet]
-    filters:
-     type: relation_member
+    type: relation_member
 
   # etldoc: imposm3 -> osm_building_relation
   building_relation:
@@ -352,5 +350,4 @@ tables:
       type: member_type
     mapping:
       type: [building]
-    filters:
-      type: relation_member
+    type: relation_member

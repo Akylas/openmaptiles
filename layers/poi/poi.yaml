@@ -61,6 +61,8 @@ layer:
           subclass: ['chocolate', 'confectionery']
         post:
           subclass: ['post_box', 'post_office']
+        waterfall:
+          subclass: ['waterfall']
         cafe:
           subclass: ['cafe']
         school:

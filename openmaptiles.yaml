@@ -12,11 +12,7 @@ tileset:
     - layers/building/building.yaml
     - layers/water_name/water_name.yaml
     - layers/transportation_name/transportation_name.yaml
-    - layers/public_transport/public_transport.yaml
-    - layers/ski_area/ski_area.yaml
-    - layers/ski_lift/ski_lift.yaml
-    - layers/cycle_route/cycle_route.yaml
-    - layers/hiking/hiking.yaml
+    - layers/route/route.yaml
     - layers/place/place.yaml
     - layers/housenumber/housenumber.yaml
     - layers/poi/poi.yaml
@@ -37,3 +33,4 @@ tileset:
     srs: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over
     datasource:
       srid: 900913
+

@@ -313,6 +313,7 @@ def_poi_mapping_tourism: &poi_mapping_tourism
 
 # waterway values , see http://taginfo.openstreetmap.org/keys/waterway#values
 def_poi_mapping_waterway: &poi_mapping_waterway
+  - waterfall
   - dock
 
 def_poi_fields: &poi_fields
@@ -359,6 +360,12 @@ def_poi_fields: &poi_fields
   - name: sport
     key: sport
     type: string
+  - name: ele
+    key: ele
+    type: string
+  - name: capacity
+    key: capacity
+    type: integer
 
 def_poi_mapping: &poi_mapping
   aerialway: *poi_mapping_aerialway
