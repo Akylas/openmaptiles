@@ -13,8 +13,8 @@ END;
 $$ STRICT
 LANGUAGE plpgsql IMMUTABLE;
 
-CREATE INDEX IF NOT EXISTS osm_building_relation_building_idx ON osm_building_relation(building) WHERE building = '' AND ST_GeometryType(geometry) = 'ST_Polygon';
-CREATE INDEX IF NOT EXISTS osm_building_relation_member_idx ON osm_building_relation(member);
+CREATE INDEX IF NOT EXISTS osm_building_relation_building_idx ON osm_building_relation(building) WHERE building = '' AND WHERE ST_GeometryType(geometry) = 'ST_Polygon';
+CREATE INDEX IF NOT EXISTS osm_building_relation_member_idx ON osm_building_relation(member) WHERE role = 'outline';
 --CREATE INDEX IF NOT EXISTS osm_building_associatedstreet_role_idx ON osm_building_associatedstreet(role) WHERE ST_GeometryType(geometry) = 'ST_Polygon';
 --CREATE INDEX IF NOT EXISTS osm_building_street_role_idx ON osm_building_street(role) WHERE ST_GeometryType(geometry) = 'ST_Polygon';
 
@@ -73,6 +73,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          FROM
          osm_building_polygon obp
            LEFT JOIN osm_building_relation obr ON obp.osm_id >= 0 AND obr.member = obp.osm_id AND obr.role = 'outline'
+         WHERE obp.osm_id >= 0
 );
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
