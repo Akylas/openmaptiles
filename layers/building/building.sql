@@ -61,22 +61,6 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          UNION ALL
 
          -- etldoc: osm_building_polygon -> layer_building:z14_
-         -- Buildings that are from multipolygons
-         SELECT osm_id,geometry,name,
-                  COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
-                  COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
-                  COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
-                  COALESCE(nullif(as_numeric(min_level),-1),nullif(as_numeric(buildingmin_level),-1)) as min_level,
-                  nullif(material, '') AS material,
-                  nullif(colour, '') AS colour,
-                  FALSE as hide_3d
-         FROM
-         osm_building_polygon obp
-         -- OSM mulipolygons once imported can give unique postgis polygons with holes, or multi parts polygons
-         WHERE osm_id < 0 AND ST_GeometryType(geometry) IN ('ST_Polygon', 'ST_MultiPolygon')
-
-         UNION ALL
-         -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Standalone buildings
          SELECT obp.osm_id,obp.geometry,name,
                   COALESCE(nullif(as_numeric(obp.height),-1),nullif(as_numeric(obp.buildingheight),-1)) as height,
@@ -85,12 +69,10 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
                   COALESCE(nullif(as_numeric(obp.min_level),-1),nullif(as_numeric(obp.buildingmin_level),-1)) as min_level,
                   nullif(obp.material, '') AS material,
                   nullif(obp.colour, '') AS colour,
-                  CASE WHEN obr.role='outline' THEN TRUE ELSE FALSE END as hide_3d
+                  obr.role IS NOT NULL as hide_3d
          FROM
          osm_building_polygon obp
-           LEFT JOIN osm_building_relation obr ON (obr.member = obp.osm_id)
-         -- Only check for ST_Polygon as we exclude buildings from relations keeping only positive ids
-         WHERE obp.osm_id >= 0 AND ST_GeometryType(obp.geometry) = 'ST_Polygon'
+           LEFT JOIN osm_building_relation obr ON obp.osm_id >= 0 AND obr.member = obp.osm_id AND obr.role = 'outline'
 );
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
