@@ -3,11 +3,10 @@
 -- etldoc:     label="layer_transportation_name | <z6> z6 | <z7> z7 | <z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_transportation_name(bbox geometry, zoom_level integer)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, ref text, ref_length int, network text, class
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, ref text, ref_length int, network text, class
   text, subclass text, layer INT, level INT, indoor INT) AS $$
     SELECT osm_id, geometry,
       NULLIF(name, '') AS name,
-      COALESCE(NULLIF(name_en, ''), name) AS name_en,
       tags,
       NULLIF(ref, ''), NULLIF(LENGTH(ref), 0) AS ref_length,
       --TODO: The road network of the road is not yet implemented
@@ -62,7 +61,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
           geometry,
           osm_id,
           name,
-          name_en,
           "tags",
           ref,
           highway,
@@ -84,7 +82,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
           geometry,
           osm_id,
           name,
-          name_en,
           "tags",
           ref,
           highway,
@@ -105,7 +102,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
           geometry,
           osm_id,
           name,
-          name_en,
           "tags",
           ref,
           highway,
