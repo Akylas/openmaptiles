@@ -49,7 +49,7 @@ RETURNS TABLE(
             WHERE geometry && bbox
                 AND zoom_level BETWEEN 12 AND 13
                 AND ((subclass='station' AND mapping_key = 'railway')
-                    OR subclass IN ('halt', 'ferry_terminal','alpine_hut','wilderness_hut'))
+                    OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut'))
         UNION ALL
 
         -- etldoc: osm_poi_point ->  layer_poi:z14_
