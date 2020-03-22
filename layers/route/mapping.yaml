@@ -12,7 +12,7 @@ foot_field: &ref
   type: string
 
 tables:
-# etldoc: imposm3 -> route_linestring
+  # etldoc: imposm3 -> route_linestring
   route_linestring:
     type: relation_member
     columns:
@@ -32,9 +32,20 @@ tables:
     - *ref
     - *network
     - *name
+    - name: ascent
+      key: ascent
+      type: integer
+    - name: descent
+      key: descent
+      type: integer
+    - name: distance
+      key: distance
+      type: integer
+    - name: website
+      key: website
+      type: string
     relation_types: [route]
     mapping:
       route:
-      - foot
       - bicycle
       - hiking

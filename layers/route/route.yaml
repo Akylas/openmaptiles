@@ -8,10 +8,10 @@ layer:
     bicycle_network:
       description: |
           From 1 for international network to 4 for local.
-    bicyle_name:
+    bicycle_name:
       description: |
           Name of the major network.
-    bicyle_ref:
+    bicycle_ref:
       description: |
           Ref of the major network.
     hiking_network:
@@ -23,10 +23,22 @@ layer:
     hiking_ref:
       description: |
           Ref of the major network.
+    hiking_ascent:
+      description: |
+          The ascent covered by a route (default units are metres; specify others explicitly). If a route has start and end point at different altitude use descent too. 
+    hiking_descent:
+      description: |
+          The descent covered by a route (default units are metres; specify others explicitly). Use it only if it differs from the ascent (different altitude at start/endpoint of a route). 
+    hiking_distance:
+      description: |
+          The nominal distance covered by the route. For users' information and automatic evaluation; e.g., of completeness. The default unit is km. Use dot as decimal separator. If a unit is specified, it should be separated from the number by a space and use a value as described on the Units page. 
+    hiking_website:
+      description: |
+          optional Website.
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, bicycle_network, bicycle_name, bicycle_ref, hiking_network, hiking_name, hiking_ref FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, bicycle_network, bicycle_name, bicycle_ref, hiking_network, hiking_name, hiking_ref, hiking_ascent, hiking_descent, hiking_distance, hiking_website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:
