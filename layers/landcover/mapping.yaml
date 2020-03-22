@@ -43,12 +43,10 @@ generalized_tables:
     sql_filter: area>power(ZRES10,2) AND ST_IsValid(geometry)
     tolerance: ZRES13
 
-
-  # etldoc: imposm3 -> osm_landcover_polygon_gen1
-  landcover_linestring:
-    source: landcover_linestring
-    sql_filter: ST_IsValid(geometry)
-    tolerance: ZRES13
+name_field: &name
+  name: name
+  key: name
+  type: string
 
 tables:
   # etldoc: imposm3 -> osm_landcover_polygon
@@ -64,6 +62,7 @@ tables:
       type: mapping_value
     - name: mapping_key
       type: mapping_key
+    - *name
     mapping:
       landuse:
       - allotments
@@ -111,15 +110,16 @@ tables:
       - saltmarsh
       - mangrove
     type: polygon
-
- # etldoc: imposm3 -> osm_natural_linestring
-  natural_linestring:
+  # etldoc: imposm3 -> osm_landcover_linestring
+  landcover_linestring:
     type: linestring
     columns:
     - name: osm_id
       type: id
     - name: geometry
-      type: validated_geometry
+      type: geometry
+    - name: subclass
+      type: mapping_value
     mapping:
       natural:
       - cliff

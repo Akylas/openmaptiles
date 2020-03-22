@@ -6,6 +6,7 @@ layer:
         is to style wood (`class=wood`) and grass (`class=grass`) areas.
   buffer_size: 4
   fields:
+    name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the landcover.
     class:
       description: |
           Use the **class** to assign natural colors for **landcover**.
@@ -74,7 +75,7 @@ layer:
       - wood
   datasource:
     geometry_field: geometry
-    query: (SELECT geometry, class, subclass FROM layer_landcover(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, name, class, subclass FROM layer_landcover(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./landcover.sql
 datasources:
