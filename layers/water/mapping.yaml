@@ -59,9 +59,6 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_en
-      key: name:en
-      type: string
     - name: tags
       type: hstore_tags
     - name: natural
@@ -72,6 +69,9 @@ tables:
       type: string
     - name: waterway
       key: waterway
+      type: string
+    - name: ele
+      key: ele
       type: string
     - name: is_intermittent
       key: intermittent
@@ -95,4 +95,6 @@ tables:
       - drain
       - ditch
       - dock
+      amenity:
+      - fountain
     type: polygon

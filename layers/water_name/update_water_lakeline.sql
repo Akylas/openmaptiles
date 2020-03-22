@@ -8,10 +8,11 @@ DROP MATERIALIZED VIEW IF EXISTS osm_water_lakeline CASCADE;
 CREATE MATERIALIZED VIEW osm_water_lakeline AS (
 	SELECT wp.osm_id,
 		ll.wkb_geometry AS geometry,
-		name, name_en,
+		name,
 		update_tags(tags, ll.wkb_geometry) AS tags,
 		ST_Area(wp.geometry) AS area,
-		is_intermittent
+		is_intermittent,
+    ele
     FROM osm_water_polygon AS wp
     INNER JOIN lake_centerline ll ON wp.osm_id = ll.osm_id
     WHERE wp.name <> '' AND ST_IsValid(wp.geometry)

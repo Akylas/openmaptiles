@@ -10,9 +10,6 @@ tables:
     - name: name
       key: name
       type: string
-    - name: name_en
-      key: name:en
-      type: string
     - name: tags
       type: hstore_tags
     - name: place
@@ -24,6 +21,9 @@ tables:
     - name: is_intermittent
       key: intermittent
       type: bool
+    - name: ele
+      key: ele
+      type: integer
     filters:
       require:
         name: ["__any__"]

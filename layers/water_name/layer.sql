@@ -3,7 +3,7 @@
 -- etldoc:     label="layer_water_name | <z0_8> z0_8 | <z9_13> z9_13 | <z14_> z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_water_name(bbox geometry, zoom_level integer)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, class text, intermittent int) AS $$
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, class text, intermittent int, ele int) AS $$
     -- etldoc: osm_water_lakeline ->  layer_water_name:z9_13
     -- etldoc: osm_water_lakeline ->  layer_water_name:z14_
     SELECT
@@ -11,14 +11,14 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
         ELSE osm_id*10+1
     END AS osm_id_hash,
     geometry, name,
-    COALESCE(NULLIF(name_en, ''), name) AS name_en,
     tags,
     'lake'::text AS class,
-    is_intermittent::int AS intermittent
+    is_intermittent::int AS intermittent,
+    substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
     FROM osm_water_lakeline
     WHERE geometry && bbox
-      AND ((zoom_level BETWEEN 9 AND 13 AND LineLabel(zoom_level, NULLIF(name, ''), geometry))
-        OR (zoom_level >= 14))
+      AND ((zoom_level BETWEEN 8 AND 11 AND LineLabel(zoom_level, NULLIF(name, ''), geometry))
+        OR (zoom_level >= 12))
     -- etldoc: osm_water_point ->  layer_water_name:z9_13
     -- etldoc: osm_water_point ->  layer_water_name:z14_
     UNION ALL
@@ -27,24 +27,24 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
         ELSE osm_id*10+1
     END AS osm_id_hash,
     geometry, name,
-    COALESCE(NULLIF(name_en, ''), name) AS name_en,
     tags,
     'lake'::text AS class,
-    is_intermittent::int AS intermittent
+    is_intermittent::int AS intermittent,
+    substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
     FROM osm_water_point
     WHERE geometry && bbox AND (
-        (zoom_level BETWEEN 9 AND 13 AND area > 70000*2^(20-zoom_level))
-        OR (zoom_level >= 14)
+        (zoom_level BETWEEN 8 AND 11 AND area > 70000*2^(20-zoom_level))
+        OR (zoom_level >= 12)
     )
     -- etldoc: osm_marine_point ->  layer_water_name:z0_8
     -- etldoc: osm_marine_point ->  layer_water_name:z9_13
     -- etldoc: osm_marine_point ->  layer_water_name:z14_
     UNION ALL
     SELECT osm_id*10, geometry, name,
-    COALESCE(NULLIF(name_en, ''), name) AS name_en,
     tags,
     place::text AS class,
-    is_intermittent::int AS intermittent
+    is_intermittent::int AS intermittent,
+    NULL::int AS ele
     FROM osm_marine_point
     WHERE geometry && bbox AND (
         place = 'ocean'
