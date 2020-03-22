@@ -83,7 +83,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
 RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_height int, render_min_height int, hide_3d boolean) AS $$
-    SELECT geometry, osm_id, name, nullif(class,'yes') as class, render_height, 
+    SELECT geometry, osm_id, nullif(name,'') as name, nullif(class,'yes') as class, render_height, 
         nullif(render_min_height,0) as render_min_height,
         CASE WHEN hide_3d THEN TRUE END AS hide_3d
     FROM (
