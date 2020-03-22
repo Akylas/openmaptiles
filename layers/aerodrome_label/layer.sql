@@ -9,7 +9,6 @@ CREATE OR REPLACE FUNCTION layer_aerodrome_label(
     osm_id bigint,
     geometry geometry,
     name text,
-    name_en text,
     tags hstore,
     class text,
     iata text,
@@ -21,7 +20,6 @@ $$
     osm_id,
     geometry,
     name,
-    COALESCE(NULLIF(name_en, ''), name) AS name_en,
     tags,
     CASE
       %%FIELD_MAPPING: class %%

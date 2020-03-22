@@ -3,14 +3,13 @@
 -- etldoc:     label="layer_place | <z0_3> z0-3|<z4_7> z4-7|<z8_11> z8-11| <z12_14> z12-z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_place(bbox geometry, zoom_level int, pixel_width numeric)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, class text, "rank" int, capital INT, iso_a2
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, class text, "rank" int, capital INT, iso_a2
         TEXT) AS $$
     SELECT * FROM (
 
     -- etldoc: osm_continent_point -> layer_place:z0_3
     SELECT
         osm_id*10, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         'continent' AS class, 1 AS "rank", NULL::int AS capital,
         NULL::text AS iso_a2
@@ -24,7 +23,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
     -- etldoc: osm_country_point -> layer_place:z12_14
     SELECT
         osm_id*10, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         'country' AS class, "rank", NULL::int AS capital,
         iso3166_1_alpha_2 AS iso_a2
@@ -38,7 +36,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
     -- etldoc: osm_state_point  -> layer_place:z12_14
     SELECT
         osm_id*10, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         'state' AS class, "rank", NULL::int AS capital,
         NULL::text AS iso_a2
@@ -54,7 +51,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
     -- etldoc: osm_island_point    -> layer_place:z12_14
     SELECT
         osm_id*10, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         'island' AS class, 7 AS "rank", NULL::int AS capital,
         NULL::text AS iso_a2
@@ -67,7 +63,6 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
     -- etldoc: osm_island_polygon  -> layer_place:z12_14
     SELECT
         osm_id*10, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         'island' AS class, island_rank(area) AS "rank", NULL::int AS capital,
         NULL::text AS iso_a2
@@ -83,7 +78,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
     -- etldoc: layer_city          -> layer_place:z8_11
     -- etldoc: layer_city          -> layer_place:z12_14
     SELECT
-        osm_id*10, geometry, name, name_en,
+        osm_id*10, geometry, name,
         tags,
         place::text AS class, "rank", capital,
         NULL::text AS iso_a2

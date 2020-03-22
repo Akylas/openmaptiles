@@ -4,10 +4,9 @@
 
 -- etldoc: osm_city_point -> layer_city:z2_14
 CREATE OR REPLACE FUNCTION layer_city(bbox geometry, zoom_level int, pixel_width numeric)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, place city_place, "rank" int, capital int) AS $$
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, place city_place, "rank" int, capital int) AS $$
   SELECT * FROM (
     SELECT osm_id, geometry, name,
-    COALESCE(NULLIF(name_en, ''), name) AS name_en,
     tags,
     place, "rank", normalize_capital_level(capital) AS capital
     FROM osm_city_point
@@ -17,14 +16,12 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
       )
     UNION ALL
     SELECT osm_id, geometry, name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
         tags,
         place,
         COALESCE("rank", gridrank + 10),
         normalize_capital_level(capital) AS capital
     FROM (
       SELECT osm_id, geometry, name,
-      COALESCE(NULLIF(name_en, ''), name) AS name_en,
       tags,
       place, "rank", capital,
       row_number() OVER (
