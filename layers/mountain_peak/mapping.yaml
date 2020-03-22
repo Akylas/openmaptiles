@@ -22,6 +22,9 @@ tables:
     - name: wikidata
       key: wikidata
       type: string
+    - name: summitcross
+      key: summit:cross
+      type: bool
     mapping:
       natural:
       - peak

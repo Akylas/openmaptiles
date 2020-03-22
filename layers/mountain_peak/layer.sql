@@ -11,23 +11,28 @@ CREATE OR REPLACE FUNCTION layer_mountain_peak(
     geometry geometry,
     name text,
     wikidata text,
+    wikipedia text,
     class text,
     tags hstore,
     ele int,
+    summitcross integer,
     "rank" int) AS
 $$
    -- etldoc: osm_peak_point -> layer_mountain_peak:z7_
   SELECT
     osm_id,
     geometry,
-    name,
-    wikidata,
+    NULL::text AS name,
+    NULL::text AS wikidata,
+    NULL::text AS wikipedia,
     tags -> 'natural' AS class,
     tags,
     ele::int,
+    CASE WHEN summitcross=TRUE THEN 1 END as summitcross,
     rank::int FROM (
-      SELECT osm_id, geometry, name, wikidata, tags,
+      SELECT osm_id, geometry, name, wikidata, wikipedia, tags,
       substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+      summitcross,
       row_number() OVER (
           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
           ORDER BY (
