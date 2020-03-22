@@ -4,6 +4,7 @@ DROP MATERIALIZED VIEW IF EXISTS osm_transportation_merge_linestring_gen4 CASCAD
 DROP MATERIALIZED VIEW IF EXISTS osm_transportation_merge_linestring_gen5 CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS osm_transportation_merge_linestring_gen6 CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS osm_transportation_merge_linestring_gen7 CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS osm_mtb_linestring CASCADE;
 
 
 DROP TRIGGER IF EXISTS trigger_flag_transportation ON osm_highway_linestring;
@@ -108,6 +109,14 @@ CREATE MATERIALIZED VIEW osm_transportation_merge_linestring_gen7 AS (
 CREATE INDEX IF NOT EXISTS osm_transportation_merge_linestring_gen7_geometry_idx
   ON osm_transportation_merge_linestring_gen7 USING gist(geometry);
 
+-- etldoc: osm_highway_linestring ->  osm_mtb_linestring
+CREATE MATERIALIZED VIEW osm_mtb_linestring AS (
+    SELECT geometry, osm_id, highway, z_order, name, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name
+    FROM public.osm_highway_linestring
+    WHERE mtb_scale <> ''
+);
+CREATE INDEX IF NOT EXISTS osm_mtb_linestring_geometry_idx
+    ON osm_mtb_linestring USING gist(geometry);
 
 -- Handle updates
 

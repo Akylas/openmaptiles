@@ -168,6 +168,15 @@ layer:
     sac_scale:
       description: |
           Original value of the [`sac_scale`](http://wiki.openstreetmap.org/wiki/Key:sac_scale) tag (highways only).
+    mtb_scale_uphill:
+      description: |
+          Original value of the [`mtb_scale_uphill`](http://wiki.openstreetmap.org/wiki/Key:mtb_scale_uphill) tag (highways only).
+    mtb_type:
+      description: |
+          Original value of the [`mtb_type`](http://wiki.openstreetmap.org/wiki/Key:mtb_type) tag (highways only).
+    mtb_name:
+      description: |
+          Original value of the [`mtb_name`](http://wiki.openstreetmap.org/wiki/Key:mtb_name) tag (highways only).
     surface:
       description: |
           Values of [`surface`](https://wiki.openstreetmap.org/wiki/Key:surface) tag devided into 2 groups `paved` (paved, asphalt, cobblestone, concrete, concrete:lanes, concrete:plates, metal, paving_stones, sett, unhewn_cobblestone, wood) and `unpaved` (unpaved, compacted, dirt, earth, fine_gravel, grass, grass_paver, gravel, gravel_turf, ground, ice, mud, pebblestone, salt, sand, snow, woodchips).
@@ -177,7 +186,7 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, surface FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name, surface FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./class.sql
   - ./update_transportation_merge.sql

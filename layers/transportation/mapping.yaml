@@ -68,10 +68,6 @@ name_field: &name
   name: name
   key: name
   type: string
-name_en_field: &name_en
-  name: name_en
-  key: name:en
-  type: string
 short_name_field: &short_name
   key: short_name
   name: short_name
@@ -163,6 +159,18 @@ mtb_scale_field: &mtb_scale
   key: mtb:scale
   name: mtb_scale
   type: string
+mtb_scale_uphill_field: &mtb_scale_uphill
+  key: mtb:scale:uphill
+  name: mtb_scale_uphill
+  type: string
+mtb_type_field: &mtb_type
+  key: mtb:type
+  name: mtb_type
+  type: string
+mtb_name_field: &mtb_name
+  key: mtb:name
+  name: mtb_name
+  type: string
 sac_scale_field: &sac_scale
   key: sac_scale
   name: sac_scale
@@ -198,7 +206,6 @@ tables:
     - *level
     - *indoor
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
@@ -216,6 +223,9 @@ tables:
     - *foot
     - *horse
     - *mtb_scale
+    - *mtb_scale_uphill
+    - *mtb_type
+    - *mtb_name
     - *sac_scale
     - *surface
     mapping:
@@ -271,7 +281,6 @@ tables:
     - *level
     - *indoor
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
@@ -309,7 +318,6 @@ tables:
     - *z_order
     - *layer
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
@@ -341,7 +349,6 @@ tables:
     - *z_order
     - *layer
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
@@ -371,12 +378,12 @@ tables:
     - *z_order
     - *layer
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
     mapping:
       aerialway:
+      - chair_lift
       - drag_lift
       - t-bar
       - j-bar
@@ -403,7 +410,6 @@ tables:
     - *z_order
     - *layer
     - *name
-    - *name_en
     - name: tags
       type: hstore_tags
     - *short_name
