@@ -31,6 +31,12 @@ generalized_tables:
     sql_filter: ST_IsValid(geometry)
     tolerance: ZRES13
 
+# etldoc: imposm3 -> osm_skilift_linestring_gen1
+  skilift_linestring_gen1:
+    source: skilift_linestring
+    sql_filter: ST_IsValid(geometry)
+    tolerance: ZRES13
+
 # etldoc: imposm3 -> osm_shipway_linestring_gen2
   shipway_linestring_gen2:
     source: shipway_linestring_gen1
@@ -367,6 +373,7 @@ tables:
   # etldoc: imposm3 -> osm_skilift_linestring
   skilift_linestring:
     type: linestring
+    _resolve_wikidata: false
     fields:
     - name: osm_id
       type: id
@@ -389,6 +396,27 @@ tables:
       - j-bar
       - platter
       - rope_tow
+
+  # etldoc: imposm3 -> osm_skipiste_linestring
+  skipiste_linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: aerialway
+      name: aerialway
+      type: string
+    - *z_order
+    - *layer
+    - *name
+    - name: tags
+      type: hstore_tags
+    - *short_name
+    mapping:
+      route:
+      - piste
 
   # etldoc: imposm3 -> osm_skiarea_linestring
   skiarea_linestring:

@@ -325,7 +325,7 @@ indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT,
         SELECT
             osm_id, geometry,
             NULL AS highway, NULL AS construction, NULL as railway, aerialway, NULL AS shipway,
-            NULL AS public_transport, service_value(service) AS service,
+            NULL AS public_transport, NULL AS service,
             is_bridge, is_tunnel, is_ford, is_ramp, is_oneway, NULL as man_made,
             layer, NULL::int AS level, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
@@ -333,6 +333,49 @@ indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT,
             NULL AS surface, z_order
         FROM osm_aerialway_linestring
         WHERE zoom_level >= 13
+        UNION ALL
+
+        -- etldoc: osm_skilift_linestring_gen1  ->  layer_transportation:z12
+        SELECT
+            osm_id, geometry,
+            NULL AS highway, NULL AS construction, NULL as railway, aerialway, NULL AS shipway,
+            NULL AS public_transport, NULL AS service,
+            NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel, NULL::boolean AS is_ford, NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
+            layer, NULL::int AS level, NULL::boolean AS indoor,
+            NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
+            NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
+            NULL AS surface, z_order
+        FROM osm_skilift_linestring_gen1
+        WHERE zoom_level = 13
+        UNION ALL
+
+        -- etldoc: osm_skilift_linestring       ->  layer_transportation:z13
+        -- etldoc: osm_skilift_linestring       ->  layer_transportation:z14_
+        SELECT
+            osm_id, geometry,
+            NULL AS highway, NULL AS construction, NULL as railway, aerialway, NULL AS shipway,
+            NULL AS public_transport, NULL AS service,
+            NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel, NULL::boolean AS is_ford, NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
+            layer, NULL::int AS level, NULL::boolean AS indoor,
+            NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
+            NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
+            NULL AS surface, z_order
+        FROM osm_skilift_linestring
+        WHERE zoom_level >= 14
+        UNION ALL
+
+        -- etldoc: osm_skipiste_linestring       ->  layer_transportation:z14_
+        SELECT
+            osm_id, geometry,
+            'piste'::text AS highway, NULL AS construction, NULL as railway, NULL AS aerialway, NULL AS shipway,
+            NULL AS public_transport, NULL AS service,
+            NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel, NULL::boolean AS is_ford, NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
+            layer, NULL::int AS level, NULL::boolean AS indoor,
+            NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
+            NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
+            NULL AS surface, z_order
+        FROM osm_skipiste_linestring
+        WHERE zoom_level >= 14
         UNION ALL
 
         -- etldoc: osm_shipway_linestring_gen2  ->  layer_transportation:z11

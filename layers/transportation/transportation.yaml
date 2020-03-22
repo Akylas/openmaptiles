@@ -37,7 +37,7 @@ layer:
         minor:
           highway: ['unclassified', 'residential', 'living_street', 'road']
         path:
-          highway: ['pedestrian', 'path', 'footway', 'cycleway', 'steps', 'bridleway', 'corridor']
+          highway: ['pedestrian', 'path', 'footway', 'cycleway', 'steps', 'bridleway', 'corridor', 'piste']
           public_transport: 'platform'
         service:
           highway: service
