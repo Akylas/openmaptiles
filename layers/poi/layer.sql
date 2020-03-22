@@ -3,9 +3,22 @@
 -- etldoc:     label="layer_poi | <z12> z12 | <z13> z13 | <z14_> z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_poi(bbox geometry, zoom_level integer, pixel_width numeric)
-RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hstore, class text, subclass text, agg_stop integer, layer integer, level integer, capacity integer, indoor integer, "rank" int) AS $$
-    SELECT osm_id_hash AS osm_id, geometry, NULLIF(name, '') AS name,
-        COALESCE(NULLIF(name_en, ''), name) AS name_en,
+RETURNS TABLE(
+    osm_id bigint, 
+    geometry geometry, 
+    name text, 
+    tags hstore, 
+    class text, 
+    subclass text, 
+    historic text, 
+    agg_stop integer, 
+    layer integer, 
+    level integer, 
+    capacity integer, 
+    indoor integer, 
+    ele int,
+   "rank" int) AS $$
+    SELECT osm_id_hash AS osm_id, geometry, NULL::text AS name,
         tags,
         poi_class(subclass, mapping_key) AS class,
         CASE
@@ -17,11 +30,13 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
                     THEN NULLIF(sport, '')
             ELSE subclass
         END AS subclass,
+        NULL::text AS historic,
         agg_stop,
         NULLIF(layer, 0) AS layer,
         "level",
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        capacity,
         CASE WHEN indoor=TRUE THEN 1 END as indoor,
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
         row_number() OVER (
             PARTITION BY LabelGrid(geometry, 100 * pixel_width)
             ORDER BY CASE WHEN name = '' THEN 2000 ELSE poi_class_rank(poi_class(subclass, mapping_key)) END ASC
@@ -34,7 +49,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, name_en text, tags hs
             WHERE geometry && bbox
                 AND zoom_level BETWEEN 12 AND 13
                 AND ((subclass='station' AND mapping_key = 'railway')
-                    OR subclass IN ('halt', 'ferry_terminal'))
+                    OR subclass IN ('halt', 'ferry_terminal','alpine_hut','wilderness_hut'))
         UNION ALL
 
         -- etldoc: osm_poi_point ->  layer_poi:z14_
