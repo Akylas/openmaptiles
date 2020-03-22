@@ -34,6 +34,11 @@ generalized_tables:
     sql_filter: area>power(ZRES11,2) AND ST_IsValid(geometry)
     tolerance: ZRES13
 
+name_field: &name
+  name: name
+  key: name
+  type: string
+
 tables:
   # etldoc: imposm3 -> osm_landuse_polygon
   landuse_polygon:
@@ -43,6 +48,7 @@ tables:
       type: id
     - name: geometry
       type: validated_geometry
+    - *name
     - name: landuse
       key: landuse
       type: string

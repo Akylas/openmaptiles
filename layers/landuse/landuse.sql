@@ -1,61 +1,61 @@
 -- etldoc: ne_50m_urban_areas -> landuse_z4
 CREATE OR REPLACE VIEW landuse_z4 AS (
-    SELECT NULL::bigint AS osm_id, geometry, 'residential'::text AS landuse, NULL::text AS amenity, NULL::text AS leisure, NULL::text AS tourism, NULL::text AS place, NULL::text AS waterway
+    SELECT NULL::bigint AS osm_id, geometry, 'residential'::text AS landuse, NULL::text AS amenity, NULL::text AS leisure, NULL::text AS tourism, NULL::text AS place, NULL::text AS waterway, NULL::text as name
     FROM ne_50m_urban_areas
     WHERE scalerank <= 2
 );
 
 -- etldoc: ne_50m_urban_areas -> landuse_z5
 CREATE OR REPLACE VIEW landuse_z5 AS (
-    SELECT NULL::bigint AS osm_id, geometry, 'residential'::text AS landuse, NULL::text AS amenity, NULL::text AS leisure, NULL::text AS tourism, NULL::text AS place, NULL::text AS waterway
+    SELECT NULL::bigint AS osm_id, geometry, 'residential'::text AS landuse, NULL::text AS amenity, NULL::text AS leisure, NULL::text AS tourism, NULL::text AS place, NULL::text AS waterway, NULL::text as name
     FROM ne_50m_urban_areas
 );
 
 -- etldoc: osm_landuse_polygon_gen7 -> landuse_z6
 CREATE OR REPLACE VIEW landuse_z6 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen7
 );
 
 -- etldoc: osm_landuse_polygon_gen6 -> landuse_z8
 CREATE OR REPLACE VIEW landuse_z8 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen6
 );
 
 -- etldoc: osm_landuse_polygon_gen5 -> landuse_z9
 CREATE OR REPLACE VIEW landuse_z9 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen5
 );
 
 -- etldoc: osm_landuse_polygon_gen4 -> landuse_z10
 CREATE OR REPLACE VIEW landuse_z10 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen4
 );
 
 -- etldoc: osm_landuse_polygon_gen3 -> landuse_z11
 CREATE OR REPLACE VIEW landuse_z11 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen3
 );
 
 -- etldoc: osm_landuse_polygon_gen2 -> landuse_z12
 CREATE OR REPLACE VIEW landuse_z12 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen2
 );
 
 -- etldoc: osm_landuse_polygon_gen1 -> landuse_z13
 CREATE OR REPLACE VIEW landuse_z13 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon_gen1
 );
 
 -- etldoc: osm_landuse_polygon -> landuse_z14
 CREATE OR REPLACE VIEW landuse_z14 AS (
-    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway
+    SELECT osm_id, geometry, landuse, amenity, leisure, tourism, place, waterway, name
     FROM osm_landuse_polygon
 );
 
@@ -63,7 +63,7 @@ CREATE OR REPLACE VIEW landuse_z14 AS (
 -- etldoc:     label="layer_landuse |<z4> z4|<z5>z5|<z6>z6|<z7>z7| <z8> z8 |<z9> z9 |<z10> z10 |<z11> z11|<z12> z12|<z13> z13|<z14> z14+" ] ;
 
 CREATE OR REPLACE FUNCTION layer_landuse(bbox geometry, zoom_level int)
-RETURNS TABLE(osm_id bigint, geometry geometry, class text) AS $$
+RETURNS TABLE(osm_id bigint, geometry geometry, class text, name text) AS $$
     SELECT osm_id, geometry,
         COALESCE(
             NULLIF(landuse, ''),
@@ -72,7 +72,8 @@ RETURNS TABLE(osm_id bigint, geometry geometry, class text) AS $$
             NULLIF(tourism, ''),
             NULLIF(place, ''),
             NULLIF(waterway, '')
-        ) AS class
+        ) AS class, 
+        name
         FROM (
         -- etldoc: landuse_z4 -> layer_landuse:z4
         SELECT * FROM landuse_z4
