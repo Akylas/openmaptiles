@@ -15,7 +15,7 @@ CREATE MATERIALIZED VIEW osm_water_point AS (
         wp.ele
     FROM osm_water_polygon AS wp
     LEFT JOIN lake_centerline ll ON wp.osm_id = ll.osm_id
-    WHERE ll.osm_id IS NULL AND wp.name <> ''
+    WHERE ll.osm_id IS NULL AND wp.name <> '' AND wp.amenity <> 'fountain'
 ) /* DELAY_MATERIALIZED_VIEW_CREATION */;
 CREATE INDEX IF NOT EXISTS osm_water_point_geometry_idx ON osm_water_point USING gist (geometry);
 
