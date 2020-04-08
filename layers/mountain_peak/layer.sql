@@ -9,6 +9,7 @@ CREATE OR REPLACE FUNCTION layer_mountain_peak(
   RETURNS TABLE(
     osm_id bigint,
     geometry geometry,
+    osmId bigint,
     name text,
     wikidata text,
     wikipedia text,
@@ -22,9 +23,10 @@ $$
   SELECT
     osm_id,
     geometry,
-    NULL::text AS name,
-    NULL::text AS wikidata,
-    NULL::text AS wikipedia,
+    osm_id as osmId,
+    name,
+    NULLIF(wikidata, '') AS wikidata,
+    NULLIF(wikipedia, '') AS wikipedia,
     tags -> 'natural' AS class,
     tags,
     ele::int,
@@ -36,7 +38,7 @@ $$
       row_number() OVER (
           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
           ORDER BY (
-            (CASE WHEN ele is not null AND ele ~ E'^-?\\d{1,4}(\\D|$)' THEN substring(ele from E'^(-?\\d+)(\\D|$)')::int ELSE 0 END) +
+            (CASE WHEN ele is not null  THEN substring(ele from E'^(-?\\d+)(\\D|$)')::int ELSE 0 END) +
             (CASE WHEN NULLIF(wikipedia, '') is not null THEN 10000 ELSE 0 END) +
             (CASE WHEN NULLIF(name, '') is not null THEN 10000 ELSE 0 END)
           ) DESC
