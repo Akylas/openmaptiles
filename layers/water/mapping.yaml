@@ -64,6 +64,9 @@ tables:
     - name: natural
       key: natural
       type: string
+    - name: amenity
+      key: amenity
+      type: string
     - name: landuse
       key: landuse
       type: string

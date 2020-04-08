@@ -71,7 +71,8 @@ CREATE OR REPLACE VIEW water_z0 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_110m_ocean
     UNION ALL
     -- etldoc:  ne_110m_lakes ->  water_z0
@@ -80,7 +81,8 @@ CREATE OR REPLACE VIEW water_z0 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_110m_lakes
 );
 
@@ -91,7 +93,8 @@ CREATE OR REPLACE VIEW water_z1 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_110m_ocean
     UNION ALL
     -- etldoc:  ne_110m_lakes ->  water_z1
@@ -100,7 +103,8 @@ CREATE OR REPLACE VIEW water_z1 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_110m_lakes
 );
 
@@ -111,7 +115,8 @@ CREATE OR REPLACE VIEW water_z2 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_50m_ocean
     UNION ALL
     -- etldoc:  ne_50m_lakes ->  water_z2
@@ -120,7 +125,8 @@ CREATE OR REPLACE VIEW water_z2 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_50m_lakes
 );
 
@@ -131,7 +137,8 @@ CREATE OR REPLACE VIEW water_z4 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_50m_ocean
     UNION ALL
     -- etldoc:  ne_10m_lakes ->  water_z4
@@ -140,7 +147,8 @@ CREATE OR REPLACE VIEW water_z4 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_10m_lakes
 );
 
@@ -151,7 +159,8 @@ CREATE OR REPLACE VIEW water_z5 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_10m_ocean
     UNION ALL
     -- etldoc:  ne_10m_lakes ->  water_z5
@@ -160,7 +169,8 @@ CREATE OR REPLACE VIEW water_z5 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM ne_10m_lakes
 );
 
@@ -171,7 +181,8 @@ CREATE OR REPLACE VIEW water_z6 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen4
     UNION ALL
    -- etldoc:  osm_water_polygon_gen6 ->  water_z6
@@ -180,9 +191,10 @@ CREATE OR REPLACE VIEW water_z6 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen6
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z7 AS (
@@ -192,7 +204,8 @@ CREATE OR REPLACE VIEW water_z7 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen4
     UNION ALL
     -- etldoc:  osm_water_polygon_gen5 ->  water_z7
@@ -201,9 +214,10 @@ CREATE OR REPLACE VIEW water_z7 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen5
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z8 AS (
@@ -213,7 +227,8 @@ CREATE OR REPLACE VIEW water_z8 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen4
     UNION ALL
     -- etldoc:  osm_water_polygon_gen4 ->  water_z8
@@ -222,9 +237,10 @@ CREATE OR REPLACE VIEW water_z8 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen4
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z9 AS (
@@ -234,7 +250,8 @@ CREATE OR REPLACE VIEW water_z9 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen3
     UNION ALL
     -- etldoc:  osm_water_polygon_gen3 ->  water_z9
@@ -243,9 +260,10 @@ CREATE OR REPLACE VIEW water_z9 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen3
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z10 AS (
@@ -255,7 +273,8 @@ CREATE OR REPLACE VIEW water_z10 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen2
     UNION ALL
     -- etldoc:  osm_water_polygon_gen2 ->  water_z10
@@ -264,9 +283,10 @@ CREATE OR REPLACE VIEW water_z10 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen2
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z11 AS (
@@ -276,7 +296,8 @@ CREATE OR REPLACE VIEW water_z11 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon_gen1
     UNION ALL
     -- etldoc:  osm_water_polygon_gen1 ->  water_z11
@@ -285,9 +306,10 @@ CREATE OR REPLACE VIEW water_z11 AS (
         is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon_gen1
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z12 AS (
@@ -297,7 +319,8 @@ CREATE OR REPLACE VIEW water_z12 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon
     UNION ALL
     -- etldoc:  osm_water_polygon ->  water_z12
@@ -306,9 +329,10 @@ CREATE OR REPLACE VIEW water_z12 AS (
         is_intermittent,
         is_bridge,
         is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z13 AS (
@@ -318,18 +342,20 @@ CREATE OR REPLACE VIEW water_z13 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon
     UNION ALL
     -- etldoc:  osm_water_polygon ->  water_z13
     SELECT geometry,
-        water_class(waterway) AS class,
+        water_class(amenity) AS class,
         is_intermittent,
         is_bridge,
         is_tunnel,
-       substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+       substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
     FROM osm_water_polygon
-    WHERE "natural" != 'bay'
+    WHERE "natural" != 'bay' AND "amenity" != 'fountain'
 );
 
 CREATE OR REPLACE VIEW water_z14 AS (
@@ -339,8 +365,20 @@ CREATE OR REPLACE VIEW water_z14 AS (
         NULL::boolean AS is_intermittent,
         NULL::boolean AS is_bridge,
         NULL::boolean AS is_tunnel,
-        NULL::int AS ele
+        NULL::int AS ele,
+        NULL::real as area
     FROM osm_ocean_polygon
+    UNION ALL
+    -- etldoc:  osm_water_polygon ->  water_z14
+    SELECT geometry,
+        water_class('fountain') AS class,
+        is_intermittent,
+        is_bridge,
+        is_tunnel,
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
+  FROM osm_water_polygon
+    WHERE "amenity" = 'fountain'
     UNION ALL
     -- etldoc:  osm_water_polygon ->  water_z14
     SELECT geometry,
@@ -348,21 +386,22 @@ CREATE OR REPLACE VIEW water_z14 AS (
         is_intermittent,
         is_bridge,
         is_tunnel,
-        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele
+        substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
+        area
   FROM osm_water_polygon
-    WHERE "natural" != 'bay'
 );
 
 -- etldoc: layer_water [shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="layer_water |<z0> z0|<z1>z1|<z2>z2|<z3>z3 |<z4> z4|<z5>z5|<z6>z6|<z7>z7| <z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
-CREATE OR REPLACE FUNCTION layer_water (bbox geometry, zoom_level int)
-RETURNS TABLE(geometry geometry, class text, brunnel text, intermittent int, ele int) AS $$
+CREATE OR REPLACE FUNCTION layer_water (bbox geometry, zoom_level int, pixel_width real, pixel_height real)
+RETURNS TABLE(geometry geometry, class text, brunnel text, intermittent int, ele int, way_pixels bigint) AS $$
     SELECT geometry,
         class::text,
         waterway_brunnel(is_bridge, is_tunnel) AS brunnel,
-        is_intermittent::int AS intermittent,
-        ele::int
+        NULLIF(is_intermittent,false)::int AS intermittent,
+        NULLIF(ele,0)::int,
+        (area/NULLIF(pixel_width::real*pixel_height::real,0))::bigint AS way_pixels
     FROM (
         -- etldoc: water_z0 ->  layer_water:z0
         SELECT * FROM water_z0 WHERE zoom_level = 0
