@@ -22,6 +22,7 @@ layer:
       - canal
       - drain
       - ditch
+      - dam
     brunnel:
       description: |
           Mark whether way is a tunnel or bridge.
@@ -34,7 +35,7 @@ layer:
       values: [0, 1]
   datasource:
     geometry_field: geometry
-    query: (SELECT geometry, name, {name_languages}, class, brunnel, intermittent FROM layer_waterway(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, name, class, brunnel, intermittent FROM layer_waterway(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./update_waterway_linestring.sql
   - ./update_important_waterway.sql

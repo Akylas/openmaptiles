@@ -58,7 +58,7 @@ CREATE OR REPLACE VIEW waterway_z12 AS (
 CREATE OR REPLACE VIEW waterway_z13 AS (
     SELECT geometry, waterway::text AS class, name, tags, is_bridge, is_tunnel, is_intermittent
     FROM osm_waterway_linestring
-    WHERE waterway IN ('river', 'canal', 'stream', 'drain', 'ditch')
+    WHERE waterway IN ('river', 'canal', 'stream', 'drain', 'ditch', 'dam')
 );
 
 -- etldoc: osm_waterway_linestring ->  waterway_z14
@@ -75,7 +75,7 @@ RETURNS TABLE(geometry geometry, class text, name text, brunnel text, intermitte
     SELECT geometry, class,
         NULLIF(name, '') AS name,
         waterway_brunnel(is_bridge, is_tunnel) AS brunnel,
-        is_intermittent::int AS intermittent,
+        NULLIF(is_intermittent, FALSE)::int AS intermittent,
         tags
     FROM (
         -- etldoc: waterway_z3 ->  layer_waterway:z3
