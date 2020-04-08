@@ -6,7 +6,6 @@ RETURNS INT AS $$
         WHEN 'bus' THEN 50
         WHEN 'tram' THEN 50
         WHEN 'subway' THEN 50
-        WHEN 'attraction' THEN 70
         WHEN 'harbor' THEN 75
         WHEN 'college' THEN 80
         WHEN 'school' THEN 85
@@ -15,8 +14,11 @@ RETURNS INT AS $$
         WHEN 'town_hall' THEN 100
         WHEN 'campsite' THEN 110
         WHEN 'lodging' THEN 113
+        WHEN 'national_park' THEN 114
         WHEN 'cemetery' THEN 115
         WHEN 'park' THEN 120
+        WHEN 'drinking_water' THEN 125
+        WHEN 'watering_place' THEN 126
         WHEN 'library' THEN 130
         WHEN 'police' THEN 135
         WHEN 'post' THEN 140
@@ -26,6 +28,7 @@ RETURNS INT AS $$
         WHEN 'fast_food' THEN 600
         WHEN 'clothing_store' THEN 700
         WHEN 'bar' THEN 800
+        WHEN 'attraction' THEN 900
         ELSE 1000
     END;
 $$

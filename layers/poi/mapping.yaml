@@ -25,6 +25,7 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - dentist
   - doctors
   - drinking_water
+  - watering_place
   - embassy
   - fast_food
   - ferry_terminal
@@ -89,16 +90,14 @@ def_poi_mapping_historic: &poi_mapping_historic
 # landuse values , see http://taginfo.openstreetmap.org/keys/landuse#values
 def_poi_mapping_landuse: &poi_mapping_landuse
   - basin
-  - brownfield
   - cemetery
   - reservoir
   - winter_sports
 
 # leisure values , see http://taginfo.openstreetmap.org/keys/leisure#values
 def_poi_mapping_leisure: &poi_mapping_leisure
-  - dog_park
-  - escape_game
   - garden
+  - escape_game
   - golf_course
   - ice_rink
   - hackerspace
@@ -106,7 +105,6 @@ def_poi_mapping_leisure: &poi_mapping_leisure
   - miniature_golf
   - park
   - pitch
-  - playground
   - sports_centre
   - stadium
   - swimming_area
@@ -291,7 +289,6 @@ def_poi_mapping_sport: &poi_mapping_sport
 def_poi_mapping_tourism: &poi_mapping_tourism
   - alpine_hut
   - aquarium
-  - artwork
   - attraction
   - bed_and_breakfast
   - camp_site
@@ -314,6 +311,15 @@ def_poi_mapping_tourism: &poi_mapping_tourism
 def_poi_mapping_waterway: &poi_mapping_waterway
   - waterfall
   - dock
+
+def_poi_mapping_natural: &poi_mapping_natural
+  - cave_entrance
+  - spring
+  - hot_spring
+  - rock
+
+def_poi_mapping_man_made: &poi_mapping_man_made
+  - adit
 
 def_poi_fields: &poi_fields
   - name: osm_id
@@ -380,6 +386,8 @@ def_poi_mapping: &poi_mapping
   sport: *poi_mapping_sport
   tourism: *poi_mapping_tourism
   waterway: *poi_mapping_waterway
+  natural: *poi_mapping_natural
+  man_made: *poi_mapping_man_made
 
 tables:
   # etldoc: imposm3 -> osm_poi_point

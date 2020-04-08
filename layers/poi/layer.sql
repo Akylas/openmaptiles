@@ -6,6 +6,7 @@ CREATE OR REPLACE FUNCTION layer_poi(bbox geometry, zoom_level integer, pixel_wi
 RETURNS TABLE(
     osm_id bigint, 
     geometry geometry, 
+    osmId bigint,
     name text, 
     tags hstore, 
     class text, 
@@ -18,7 +19,7 @@ RETURNS TABLE(
     indoor integer, 
     ele int,
    "rank" int) AS $$
-    SELECT osm_id_hash AS osm_id, geometry, NULL::text AS name,
+    SELECT osm_id_hash AS osm_id, geometry, osm_id_hash as osmId, NULLIF(name, '') AS name,
         tags,
         poi_class(subclass, mapping_key) AS class,
         CASE
@@ -28,6 +29,8 @@ RETURNS TABLE(
                     THEN NULLIF(religion, '')
             WHEN subclass = 'pitch'
                     THEN NULLIF(sport, '')
+            WHEN poi_class(subclass, mapping_key) = subclass
+                    THEN NULL
             ELSE subclass
         END AS subclass,
         NULL::text AS historic,
@@ -39,9 +42,17 @@ RETURNS TABLE(
         substring(ele from E'^(-?\\d+)(\\D|$)')::int AS ele,
         row_number() OVER (
             PARTITION BY LabelGrid(geometry, 100 * pixel_width)
-            ORDER BY CASE WHEN name = '' THEN 2000 ELSE poi_class_rank(poi_class(subclass, mapping_key)) END ASC
+            ORDER BY CASE WHEN name is null THEN 2000 ELSE poi_class_rank(poi_class(subclass, mapping_key)) END ASC
         )::int AS "rank"
     FROM (
+        -- etldoc: osm_poi_point ->  layer_poi:z11
+        -- etldoc: osm_poi_point ->  layer_poi:z12
+        SELECT *,
+            osm_id*10 AS osm_id_hash FROM osm_poi_point
+            WHERE geometry && bbox
+                AND zoom_level BETWEEN 11 AND 12
+                AND (subclass IN ('alpine_hut', 'wilderness_hut'))
+        UNION ALL
         -- etldoc: osm_poi_point ->  layer_poi:z12
         -- etldoc: osm_poi_point ->  layer_poi:z13
         SELECT *,
@@ -57,6 +68,8 @@ RETURNS TABLE(
             osm_id*10 AS osm_id_hash FROM osm_poi_point
             WHERE geometry && bbox
                 AND zoom_level >= 14
+                AND (subclass!='information' OR (information !='board' and NULLIF(name, '') is not null))
+                AND (subclass!='viewpoint' OR (NULLIF(name, '') is not null))
 
         UNION ALL
         -- etldoc: osm_poi_polygon ->  layer_poi:z12
