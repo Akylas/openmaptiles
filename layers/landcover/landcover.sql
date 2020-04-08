@@ -77,7 +77,7 @@ CREATE OR REPLACE VIEW landcover_z14 AS (
     -- etldoc: osm_landcover_polygon ->  landcover_z14
     SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
 );
-CREATE OR REPLACE VIEW landcover_cliffs AS (
+CREATE OR REPLACE VIEW landcover_linestring AS (
     -- etldoc: osm_landcover_linestring ->  landcover_cliffs
     SELECT osm_id, geometry, subclass, NULL::text as name FROM osm_landcover_linestring
 );
@@ -89,7 +89,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, class text, subclass text, name 
     SELECT osm_id, geometry,
         landcover_class(subclass) AS class,
         subclass,
-        name
+        case when (subclass not in ('park')) then nullif(name,'') end as name
     FROM (
         -- etldoc:  landcover_z0 -> layer_landcover:z0_1
         SELECT * FROM landcover_z0
@@ -135,8 +135,12 @@ RETURNS TABLE(osm_id bigint, geometry geometry, class text, subclass text, name 
         SELECT *
         FROM landcover_z14 WHERE zoom_level >= 14
         UNION ALL
-        -- etldoc:  landcover_cliffs -> layer_landcover:z14_
-        SELECT * FROM landcover_cliffs WHERE zoom_level >= 13
+        -- etldoc:  landcover_linestring -> layer_landcover:z12_
+        SELECT * FROM landcover_linestring WHERE  zoom_level >= 12
+            AND (subclass in ('cliff'))
+        UNION ALL
+        -- etldoc:  landcover_linestring -> layer_landcover:z14_
+        SELECT * FROM landcover_linestring WHERE zoom_level >= 14
     ) AS zoom_levels
     WHERE geometry && bbox;
 $$

@@ -94,7 +94,6 @@ tables:
       - sand
       - dune
       - rock
-      - stone
       leisure:
       - park
       - garden
@@ -123,3 +122,9 @@ tables:
     mapping:
       natural:
       - cliff
+      barrier:
+      - city_wall
+      - retaining_wall
+      - wall
+      historic:
+      - citywalls
