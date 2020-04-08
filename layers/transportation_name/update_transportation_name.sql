@@ -33,6 +33,38 @@ CREATE MATERIALIZED VIEW osm_transportation_name_network AS (
   left join osm_route_member rm on (rm.member = hl.osm_id)
   where hl.public_transport != 'platform'
     AND (hl.name IS NOT NULL OR hl.ref IS NOT NULL OR rm.ref IS NOT NULL)
+
+  UNION ALL
+  SELECT
+      geometry,
+      osm_id,
+      CASE WHEN length(name)>15 THEN osml10n_street_abbrev_all(name) ELSE name END AS "name",
+      tags,
+      NULL AS network_type,
+      NULL AS ref,
+      aerialway AS highway,
+      NULL AS construction,
+      NULL::int AS layer, NULL::int AS level, NULL::boolean AS indoor,
+      NULL::int AS "rank",
+
+      z_order
+  FROM osm_aerialway_linestring
+
+  UNION ALL
+  SELECT
+      geometry,
+      osm_id,
+      CASE WHEN length(name)>15 THEN osml10n_street_abbrev_all(name) ELSE name END AS "name",
+      tags,
+      NULL AS network_type,
+      NULL AS ref,
+      aerialway AS highway,
+      NULL AS construction,
+      NULL::int AS layer, NULL::int AS level, NULL::boolean AS indoor,
+      NULL::int AS "rank",
+      z_order
+  FROM osm_skilift_linestring
+
 ) /* DELAY_MATERIALIZED_VIEW_CREATION */;
 CREATE INDEX IF NOT EXISTS osm_transportation_name_network_geometry_idx ON osm_transportation_name_network USING gist(geometry);
 
@@ -69,7 +101,7 @@ CREATE MATERIALIZED VIEW osm_transportation_name_linestring AS (
       FROM osm_transportation_name_network
       WHERE ("rank"=1 OR "rank" is null)
         AND (name <> '' OR ref <> '')
-        AND NULLIF(highway, '') IS NOT NULL
+        AND (NULLIF(highway, '') IS NOT NULL)
       group by name, ref, highway, construction, "level", layer, indoor, network_type
     ) AS highway_union
 ) /* DELAY_MATERIALIZED_VIEW_CREATION */;

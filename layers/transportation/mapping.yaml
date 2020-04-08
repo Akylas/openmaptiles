@@ -185,6 +185,10 @@ surface_field: &surface
   key: surface
   name: surface
   type: string
+tracktype_field: &tracktype
+  key: tracktype
+  name: tracktype
+  type: string
 
 tables:
 # etldoc: imposm3 -> osm_highway_linestring
@@ -234,6 +238,7 @@ tables:
     - *mtb_name
     - *sac_scale
     - *surface
+    - *tracktype
     mapping:
       highway:
       - motorway
@@ -261,6 +266,7 @@ tables:
       - track
       - raceway
       - construction
+      - via_ferrata
       public_transport:
       - platform
       man_made:
@@ -339,6 +345,8 @@ tables:
       aerialway:
       - cable_car
       - gondola
+      - goods
+      - zip_line
 
 # etldoc: imposm3 -> osm_shipway_linestring
   shipway_linestring:
@@ -390,6 +398,7 @@ tables:
     - *short_name
     mapping:
       aerialway:
+      - mixed_lift
       - chair_lift
       - drag_lift
       - t-bar
@@ -414,18 +423,6 @@ tables:
     - name: tags
       type: hstore_tags
     - *short_name
-    mapping:
-      route:
-      - piste
-
-  # etldoc: imposm3 -> osm_skiarea_linestring
-  skiarea_linestring:
-    type: linestring
-    fields:
-    - name: osm_id
-      type: id
-    - name: geometry
-      type: geometry
     - key: piste:type
       name: type
       type: string
@@ -435,16 +432,10 @@ tables:
     - key: piste:grooming
       name: grooming
       type: string
-    - *z_order
-    - *layer
-    - *name
-    - name: tags
-      type: hstore_tags
-    - *short_name
     mapping:
       piste:type:
-        - downhill
-        - nordic
+      - __any__
+
 
 # etldoc: imposm3 -> osm_highway_polygon
   highway_polygon:

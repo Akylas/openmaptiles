@@ -37,7 +37,10 @@ layer:
         minor:
           highway: ['unclassified', 'residential', 'living_street', 'road']
         path:
-          highway: ['pedestrian', 'path', 'footway', 'cycleway', 'steps', 'bridleway', 'corridor', 'piste']
+          highway: ['pedestrian', 'path', 'footway', 'cycleway', 'steps', 'bridleway', 'corridor']
+          public_transport: 'platform'
+        piste:
+          highway: ['piste']
           public_transport: 'platform'
         service:
           highway: service
@@ -87,6 +90,10 @@ layer:
           __AND__:
             highway: construction
             construction: raceway
+        aerialway:
+          highway: ['cable_car', 'gondola', 'mixed_lift', 'chair_lift', 'drag_lift', 't-bar', 'j-bar', 'platter', 'rope_tow','goods','zip_line']
+        via_ferrata:
+          highway: ['via_ferrata']
     subclass:
       description: |
           Distinguish more specific classes of railway and path:
@@ -186,7 +193,7 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name, surface FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name, surface, tracktype, grooming, type, difficulty FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./class.sql
   - ./update_transportation_merge.sql

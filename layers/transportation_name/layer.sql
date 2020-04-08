@@ -18,7 +18,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, ref text
       end as network,
       highway_class(highway, '', construction) AS class,
       CASE
-          WHEN highway IS NOT NULL AND highway_class(highway, '', construction) = 'path'
+          WHEN highway IS NOT NULL AND highway_class(highway, '', construction) in ('path', 'piste','aerialway')
               THEN highway
       END AS subclass,
       NULLIF(layer, 0) AS layer,

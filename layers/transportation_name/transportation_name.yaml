@@ -51,6 +51,7 @@ layer:
       - raceway_construction
       - rail
       - transit
+      - aerialway
     subclass:
       description: |
           Distinguish more specific classes of path:
@@ -65,6 +66,7 @@ layer:
       - bridleway
       - corridor
       - platform
+      - chair_lift
     level:
       description: |
           Experimental feature! Filled only for steps and footways. Original
@@ -82,7 +84,7 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, name, {name_languages}, ref, ref_length, network::text, class::text, subclass, layer, level, indoor FROM layer_transportation_name(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, name, ref, ref_length, network::text, class::text, subclass, layer, level, indoor FROM layer_transportation_name(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./network_type.sql
   - ./update_route_member.sql
