@@ -38,7 +38,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, name, {name_languages}, class, iata, icao, ele FROM layer_aerodrome_label (!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT osm_id, geometry, name, class, iata, icao, ele FROM layer_aerodrome_label (!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./update.sql
   - ./layer.sql
