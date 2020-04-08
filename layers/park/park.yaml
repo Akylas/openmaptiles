@@ -12,9 +12,13 @@ layer:
       - nature_reserve
     name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the park (point features only).
     rank: Rank of the park within one tile, starting at 1 that is the most important park (point features only).
+    osmid: osm_id
+    way_pixels: area size in pixels
   datasource:
     geometry_field: geometry
-    query: (SELECT geometry, class, name, {name_languages}, rank FROM layer_park(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    key_field: osm_id
+    key_field_as_attribute: no
+    query: (SELECT osm_id, geometry, osmId, class, name, rank, way_pixels FROM layer_park(!bbox!, z(!scale_denominator!), !pixel_width!, !pixel_height!)) AS t
 schema:
   - ./update_park_polygon.sql
   - ./layer.sql
