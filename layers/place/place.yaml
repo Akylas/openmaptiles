@@ -59,7 +59,7 @@ layer:
     geometry_field: geometry
     key_field: osm_id
     key_field_as_attribute: no
-    query: (SELECT osm_id, geometry, name, {name_languages}, class, rank, capital, iso_a2 FROM layer_place(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT osm_id, geometry, name, class, rank, capital, iso_a2 FROM layer_place(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./types.sql
   - ./capital.sql
