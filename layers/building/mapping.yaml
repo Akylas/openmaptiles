@@ -30,6 +30,18 @@ tables:
     - name: building
       key: building
       type: string
+    - name: amenity
+      key: amenity
+      type: string
+    - name: shop
+      key: shop
+      type: string
+    - name: tourism
+      key: tourism
+      type: string
+    - name: leisure
+      key: leisure
+      type: string
     - name: buildingpart
       key: building:part
       type: string
@@ -86,6 +98,18 @@ tables:
       key: building
       type: string
       from_member: true
+    - name: amenity
+      key: amenity
+      type: string
+    - name: shop
+      key: shop
+      type: string
+    - name: tourism
+      key: tourism
+      type: string
+    - name: leisure
+      key: leisure
+      type: string
     - name: material
       key: building:material
       type: string
@@ -178,6 +202,18 @@ tables:
       key: building
       type: string
       from_member: true
+    - name: amenity
+      key: amenity
+      type: string
+    - name: shop
+      key: shop
+      type: string
+    - name: tourism
+      key: tourism
+      type: string
+    - name: leisure
+      key: leisure
+      type: string
     - name: material
       key: building:material
       type: string
@@ -270,6 +306,18 @@ tables:
       key: building
       type: string
       from_member: true
+    - name: amenity
+      key: amenity
+      type: string
+    - name: shop
+      key: shop
+      type: string
+    - name: tourism
+      key: tourism
+      type: string
+    - name: leisure
+      key: leisure
+      type: string
     - name: material
       key: building:material
       type: string
