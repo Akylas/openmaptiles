@@ -156,3 +156,4 @@ tables:
       - suburb
       - neighbourhood
       - isolated_dwelling
+      - locality
