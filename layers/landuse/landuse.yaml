@@ -5,7 +5,6 @@ layer:
       from Natural Earth data for residential (urban) areas and at higher zoom levels mostly OSM `landuse` tags.
   buffer_size: 4
   fields:
-    name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the landcover.
     class:
       description: |
           Use the **class** to assign special colors to areas.
@@ -25,6 +24,7 @@ layer:
       - industrial
       - retail
       - bus_station
+      - parking
       - school
       - university
       - kindergarten
@@ -39,10 +39,10 @@ layer:
       - zoo
       - suburb
       - neighbourhood
-      - dam
+    name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the aerodrome.
   datasource:
     geometry_field: geometry
-    query: (SELECT geometry, class, name FROM layer_landuse(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, name, class FROM layer_landuse(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./landuse.sql
 datasources:
