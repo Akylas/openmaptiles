@@ -25,7 +25,8 @@ RETURNS INT AS $$
         WHEN 'golf' THEN 150
         WHEN 'shop' THEN 400
         WHEN 'grocery' THEN 500
-        WHEN 'fast_food' THEN 600
+        WHEN 'restaurant' THEN 600
+        WHEN 'fast_food' THEN 601
         WHEN 'clothing_store' THEN 700
         WHEN 'bar' THEN 800
         WHEN 'attraction' THEN 900
