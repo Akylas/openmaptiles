@@ -46,7 +46,7 @@ SELECT geometry,
     FROM osm_route_max_network WHERE route = 'bicycle'
     UNION ALL
     SELECT geometry,
-    'bicyhikingcle' as class,
+    'hiking' as class,
     network, 
     nullif(name, '') as name, 
     nullif(ref, '') as ref,
