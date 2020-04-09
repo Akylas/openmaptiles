@@ -187,6 +187,18 @@ layer:
     surface:
       description: |
           Values of [`surface`](https://wiki.openstreetmap.org/wiki/Key:surface) tag devided into 2 groups `paved` (paved, asphalt, cobblestone, concrete, concrete:lanes, concrete:plates, metal, paving_stones, sett, unhewn_cobblestone, wood) and `unpaved` (unpaved, compacted, dirt, earth, fine_gravel, grass, grass_paver, gravel, gravel_turf, ground, ice, mud, pebblestone, salt, sand, snow, woodchips).
+    tracktype:
+      description: |
+          Values of [`piste:tracktype`](https://wiki.openstreetmap.org/wiki/Key:piste:tracktype) for pistes.
+    grooming:
+      description: |
+          Values of [`piste:grooming`](https://wiki.openstreetmap.org/wiki/Key:piste:grooming) for pistes.
+    type:
+      description: |
+          Values of [`piste:type`](https://wiki.openstreetmap.org/wiki/Key:piste:grtypeooming) for pistes.
+    difficulty:
+      description: |
+          Values of [`piste:difficulty`](https://wiki.openstreetmap.org/wiki/Key:piste:difficulty) for pistes.
       values:
       - paved
       - unpaved
