@@ -29,5 +29,4 @@ tables:
       natural:
       - peak
       - volcano
-      - spring
       - saddle

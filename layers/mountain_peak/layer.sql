@@ -24,7 +24,7 @@ $$
     osm_id,
     geometry,
     osm_id as osmId,
-    name,
+    NULLIF(name, '') as name,
     NULLIF(wikidata, '') AS wikidata,
     NULLIF(wikipedia, '') AS wikipedia,
     tags -> 'natural' AS class,
@@ -38,19 +38,18 @@ $$
       row_number() OVER (
           PARTITION BY LabelGrid(geometry, 100 * pixel_width)
           ORDER BY (
-            (CASE WHEN ele is not null  THEN substring(ele from E'^(-?\\d+)(\\D|$)')::int ELSE 0 END) +
-            (CASE WHEN NULLIF(wikipedia, '') is not null THEN 10000 ELSE 0 END) +
-            (CASE WHEN NULLIF(name, '') is not null THEN 10000 ELSE 0 END)
+            (CASE WHEN ele is not null and ele ~ E'^-?\\d{1,4}(\\D|$)' THEN substring(ele from E'^(-?\\d+)(\\D|$)')::int ELSE 0 END) +
+            (CASE WHEN ele is not null and NULLIF(wikipedia, '') is not null THEN 5000 ELSE 0 END) +
+            (CASE WHEN ele is not null and NULLIF(name, '') is not null THEN 10000 ELSE 0 END)
           ) DESC
       )::int AS "rank"
       FROM osm_peak_point
       WHERE geometry && bbox
     ) AS ranked_peaks
-  WHERE
-    (zoom_level >= 7 AND rank <= 1 AND ele is not null) OR
-    (zoom_level >= 9 AND rank <= 3 AND ele is not null) OR
-    (zoom_level >= 11 AND rank <= 5 AND ele is not null) OR
-    (zoom_level >= 14)
+  WHERE (zoom_level BETWEEN 7 AND 9 AND rank <= 1)
+    OR (zoom_level BETWEEN 9 AND 11 AND rank <= 3)
+    OR (zoom_level BETWEEN 11 AND 14 AND rank <= 5)
+    OR (zoom_level >= 14)
   ORDER BY "rank" ASC;
 
 $$
