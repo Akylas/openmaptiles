@@ -5,31 +5,33 @@ layer:
   buffer_size: 4
   srs: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over
   fields:
-    bicycle_network:
+    class:
+      description: |
+          correspond to [route](https://wiki.openstreetmap.org/wiki/Key:route?uselang=en-US) key
+      values:
+        bicycle:
+          route: 'bicycle'
+        hiking:
+          route: 'hiking'
+    network:
       description: |
           From 1 for international network to 4 for local.
-    bicycle_name:
+    name:
       description: |
           Name of the major network.
-    bicycle_ref:
+    ref:
       description: |
           Ref of the major network.
-    hiking_network:
+    colour:
       description: |
-          From 1 for international network to 4 for local.
-    hiking_name:
-      description: |
-          Name of the major network.
-    hiking_ref:
-      description: |
-          Ref of the major network.
-    hiking_ascent:
+          optional colour
+    ascent:
       description: |
           The ascent covered by a route (default units are metres; specify others explicitly). If a route has start and end point at different altitude use descent too. 
-    hiking_descent:
+    descent:
       description: |
           The descent covered by a route (default units are metres; specify others explicitly). Use it only if it differs from the ascent (different altitude at start/endpoint of a route). 
-    hiking_distance:
+    distance:
       description: |
           The nominal distance covered by the route. For users' information and automatic evaluation; e.g., of completeness. The default unit is km. Use dot as decimal separator. If a unit is specified, it should be separated from the number by a space and use a value as described on the Units page. 
     hiking_website:
@@ -38,7 +40,7 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, bicycle_network, bicycle_name, bicycle_ref, hiking_network, hiking_name, hiking_ref, hiking_ascent, hiking_descent, hiking_distance, hiking_website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, class, network, name, ref, colour, ascent, descent, distance, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:

@@ -44,6 +44,9 @@ tables:
     - name: website
       key: website
       type: string
+    - name: colour
+      key: colour
+      type: string
     relation_types: [route]
     mapping:
       route:
