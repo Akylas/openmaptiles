@@ -42,6 +42,9 @@ tables:
     - name: leisure
       key: leisure
       type: string
+    - name: aerialway
+      key: aerialway
+      type: string
     - name: buildingpart
       key: building:part
       type: string
@@ -109,6 +112,9 @@ tables:
       type: string
     - name: leisure
       key: leisure
+      type: string
+    - name: aerialway
+      key: aerialway
       type: string
     - name: material
       key: building:material
@@ -214,6 +220,9 @@ tables:
     - name: leisure
       key: leisure
       type: string
+    - name: aerialway
+      key: aerialway
+      type: string
     - name: material
       key: building:material
       type: string
@@ -317,6 +326,9 @@ tables:
       type: string
     - name: leisure
       key: leisure
+      type: string
+    - name: aerialway
+      key: aerialway
       type: string
     - name: material
       key: building:material

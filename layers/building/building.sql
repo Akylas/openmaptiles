@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS osm_building_relation_member_idx ON osm_building_rela
 CREATE OR REPLACE VIEW osm_all_buildings AS (
          -- etldoc: osm_building_relation -> layer_building:z14_
          -- Buildings built from relations
-         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,
+         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -33,7 +33,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
          -- etldoc: osm_building_associatedstreet -> layer_building:z14_
          -- Buildings in associatedstreet relations
-         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,
+         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -44,7 +44,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          UNION ALL
          -- etldoc: osm_building_street -> layer_building:z14_
          -- Buildings in street relations
-         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,
+         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -56,7 +56,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
          -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Buildings that are from multipolygons
-         SELECT osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,
+         SELECT osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
                   COALESCE(nullif(as_numeric(height),-1),nullif(as_numeric(buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(min_height),-1),nullif(as_numeric(buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(levels),-1),nullif(as_numeric(buildinglevels),-1)) as levels,
@@ -69,7 +69,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          UNION ALL
          -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Standalone buildings
-         SELECT obp.osm_id,obp.geometry,obp.name, obp.building::text as class,obp.amenity,obp.shop,obp.tourism,obp.leisure,
+         SELECT obp.osm_id,obp.geometry,obp.name, obp.building::text as class,obp.amenity,obp.shop,obp.tourism,obp.leisure,obp.aerialway,
                   COALESCE(nullif(as_numeric(obp.height),-1),nullif(as_numeric(obp.buildingheight),-1)) as height,
                   COALESCE(nullif(as_numeric(obp.min_height),-1),nullif(as_numeric(obp.buildingmin_height),-1)) as min_height,
                   COALESCE(nullif(as_numeric(obp.levels),-1),nullif(as_numeric(obp.buildinglevels),-1)) as levels,
@@ -84,14 +84,14 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
 RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_height int, render_min_height int, hide_3d boolean) AS $$
     SELECT geometry, osm_id, case when 
-        (class in ('yes') and (nullif(amenity,'') is null and nullif(shop,'') is null and nullif(tourism,'') is null and nullif(leisure,'') is null)) then nullif(name,'') end as name, 
+        (class in ('yes') and (nullif(amenity,'') is null and nullif(shop,'') is null and nullif(tourism,'') is null and nullif(leisure,'') is null and nullif(aerialway,'') is null)) then nullif(name,'') end as name, 
         nullif(class,'yes') as class, render_height, 
         nullif(render_min_height,0) as render_min_height,
         CASE WHEN hide_3d THEN TRUE END AS hide_3d
     FROM (
         -- etldoc: osm_building_polygon_gen1 -> layer_building:z13
         SELECT
-            osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,
+            osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
             NULL::int AS render_height, NULL::int AS render_min_height,
             FALSE AS hide_3d
         FROM osm_building_polygon_gen1
@@ -99,7 +99,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_he
         UNION ALL
         -- etldoc: osm_building_polygon -> layer_building:z14_
         SELECT DISTINCT ON (osm_id)
-           osm_id, geometry, name, class,amenity,shop,tourism,leisure,
+           osm_id, geometry, name, class,amenity,shop,tourism,leisure,aerialway,
            ceil( COALESCE(height, levels*3.66,5))::int AS render_height,
            floor(COALESCE(min_height, min_level*3.66,0))::int AS render_min_height,
            hide_3d
