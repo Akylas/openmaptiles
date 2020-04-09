@@ -23,13 +23,9 @@ RETURNS INT AS $$
         WHEN 'police' THEN 135
         WHEN 'post' THEN 140
         WHEN 'golf' THEN 150
-        WHEN 'shop' THEN 400
         WHEN 'grocery' THEN 500
         WHEN 'restaurant' THEN 600
-        WHEN 'fast_food' THEN 601
-        WHEN 'clothing_store' THEN 700
         WHEN 'bar' THEN 800
-        WHEN 'attraction' THEN 900
         ELSE 1000
     END;
 $$
