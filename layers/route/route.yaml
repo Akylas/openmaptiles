@@ -34,7 +34,7 @@ layer:
     distance:
       description: |
           The nominal distance covered by the route. For users' information and automatic evaluation; e.g., of completeness. The default unit is km. Use dot as decimal separator. If a unit is specified, it should be separated from the number by a space and use a value as described on the Units page. 
-    hiking_website:
+    website:
       description: |
           optional Website.
   datasource:
