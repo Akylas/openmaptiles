@@ -147,6 +147,8 @@ tables:
     filters:
       require:
         name: ["__any__"]
+      reject:
+        natural: ["peak","saddle"]
     mapping:
       place:
       - city
