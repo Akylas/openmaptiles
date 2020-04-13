@@ -27,7 +27,7 @@ if [ $# -eq 0 ]; then
 else
     osm_area=$1
 fi
-testdata="${osm_area}.osm.pbf"
+testdata="${osm_area}-latest.osm.pbf"
 
 ##  Min versions ...
 MIN_COMPOSE_VER=1.7.1
@@ -35,11 +35,6 @@ MIN_DOCKER_VER=1.12.3
 STARTTIME=$(date +%s)
 STARTDATE=$(date +"%Y-%m-%dT%H:%M%z")
 githash=$( git rev-parse HEAD )
-
-# Options to run with docker and docker-compose - ensure the container is destroyed on exit,
-# as well as pass any other common parameters.
-# In the future this should use -u $(id -u "$USER"):$(id -g "$USER") instead of running docker as root.
-DC_OPTS="--rm -u $(id -u "$USER"):$(id -g "$USER")"
 
 log_file=./quickstart.log
 rm -f $log_file
@@ -110,8 +105,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     mem=$( grep MemTotal /proc/meminfo | awk '{print $2}' | xargs -I {} echo "scale=4; {}/1024^2" | bc  )
     echo "system memory (GB): ${mem}"
     grep SwapTotal /proc/meminfo
-    echo "cpu number: $(grep -c processor /proc/cpuinfo) x $(cat /proc/cpuinfo | grep "bogomips" | head -1)"
-    cat /proc/meminfo  | grep Free
+    echo "cpu number: $(grep -c processor /proc/cpuinfo) x $(grep "bogomips" /proc/cpuinfo | head -1)"
+    grep Free /proc/meminfo
 else
     echo " "
     echo "Warning : Platforms other than Linux are less tested"
@@ -121,11 +116,11 @@ fi
 echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : Stopping running services & removing old containers"
-make clean-docker
+make db-destroy
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Checking OpenMapTiles docker images "
+echo "====> : Existing OpenMapTiles docker images. Will use version $(source .env && echo "$TOOLS_VERSION")"
 docker images | grep openmaptiles
 
 echo " "
@@ -138,21 +133,12 @@ echo "--------------------------------------------------------------------------
 echo "====> : Removing old MBTILES if exists ( ./data/*.mbtiles ) "
 rm -f ./data/*.mbtiles
 
-if [ !  -f "./data/${testdata}" ]; then
+if [[ ! -f "./data/${testdata}" || ! -f "./data/docker-compose-config.yml" ]]; then
     echo " "
     echo "-------------------------------------------------------------------------------------"
-    echo "====> : Downloading testdata $testdata"
-    rm -f ./data/*
-    #wget $testdataurl  -P ./data
+    echo "====> : Downloading ${osm_area} from Geofabrik..."
+    rm -rf ./data/*
     make download-geofabrik "area=${osm_area}"
-    echo " "
-    echo "-------------------------------------------------------------------------------------"
-    echo "====> : Osm metadata : $testdata"
-    cat ./data/osmstat.txt
-    echo " "
-    echo "-------------------------------------------------------------------------------------"
-    echo "====> : Generated docker-compose config"
-    cat ./data/docker-compose-config.yml
 else
     echo " "
     echo "-------------------------------------------------------------------------------------"
@@ -173,48 +159,49 @@ make clean
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Code generating from the layer definitions ( ./build/mapping.yaml; ./build/tileset.sql )"
+echo "====> : Code generating from the layer definitions ( ./build/mapping.yaml; ./build/sql/* )"
 echo "      : The tool source code: https://github.com/openmaptiles/openmaptiles-tools "
 echo "      : But we generate the tm2source, Imposm mappings and SQL functions from the layer definitions! "
-make
+make all
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Start PostgreSQL service ; create PostgreSQL data volume "
-echo "      : Source code: https://github.com/openmaptiles/postgis "
-echo "      : Thank you: https://www.postgresql.org !  Thank you http://postgis.org !"
-make db-start
-
-echo " "
-echo "-------------------------------------------------------------------------------------"
-echo "====> : Drop and Recreate PostgreSQL  public schema "
-# Drop all PostgreSQL tables
-# This adds an extra safety belt if the user modifies the docker volume settings
-make forced-clean-sql
-
-echo " "
-echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing water data from http://osmdata.openstreetmap.de/ into PostgreSQL "
-echo "      : Source code:  https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-water "
-echo "      : Data license: https://osmdata.openstreetmap.de/info/license.html "
-echo "      : Thank you: https://osmdata.openstreetmap.de/info/ "
-make import-water
-
-echo " "
-echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing  http://www.naturalearthdata.com  into PostgreSQL "
-echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-natural-earth "
-echo "      : Terms-of-use: http://www.naturalearthdata.com/about/terms-of-use  "
-echo "      : Thank you: Natural Earth Contributors! "
-make import-natural-earth
-
-echo " "
-echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing OpenStreetMap Lakelines data "
-echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-lakelines "
-echo "      :              https://github.com/lukasmartinelli/osm-lakelines "
-echo "      : Data license: .. "
-make import-lakelines
+if [ $# -eq 0 ] || [ $# -eq 1 ]; then
+  echo "====> : Start PostgreSQL service using postgis image preloaded with this data:"
+  echo "      : * Water data from http://osmdata.openstreetmap.de"
+  echo "      :   Data license: https://osmdata.openstreetmap.de/info/license.html"
+  echo "      : * Natural Earth from http://www.naturalearthdata.com"
+  echo "      :   Terms-of-use: http://www.naturalearthdata.com/about/terms-of-use"
+  echo "      : * OpenStreetMap Lakelines data https://github.com/lukasmartinelli/osm-lakelines"
+  echo "      :"
+  echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-data"
+  echo "      :   includes all data from the import-data image"
+  echo "      :"
+  echo "      : Use two-parameter quickstart to start with an empty database:"
+  echo "      :   ./quickstart.sh albania empty"
+  echo "      : If desired, you can manually import data by one using these commands:"
+  echo "      :   make db-destroy"
+  echo "      :   make db-start"
+  echo "      :   make import-data"
+  echo "      :"
+  echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/postgis-preloaded"
+  echo "      : Thank you: https://www.postgresql.org !  Thank you http://postgis.org !"
+  make db-start-preloaded
+else
+  echo "====> : Start PostgreSQL service using empty database and importing all the data:"
+  echo "      : * Water data from http://osmdata.openstreetmap.de"
+  echo "      :   Data license: https://osmdata.openstreetmap.de/info/license.html"
+  echo "      : * Natural Earth from http://www.naturalearthdata.com"
+  echo "      :   Terms-of-use: http://www.naturalearthdata.com/about/terms-of-use"
+  echo "      : * OpenStreetMap Lakelines data https://github.com/lukasmartinelli/osm-lakelines"
+  echo "      :"
+  echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-data"
+  echo "      :   includes all data from the import-data image"
+  echo "      :"
+  echo "      : Thank you: https://www.postgresql.org !  Thank you http://postgis.org !"
+  make db-start
+  make import-data
+fi
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
@@ -236,7 +223,14 @@ make import-borders
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Start SQL postprocessing:  ./build/tileset.sql -> PostgreSQL "
+echo "====> : Start importing Wikidata: Wikidata Query Service -> PostgreSQL"
+echo "      : The Wikidata license: CC0 - https://www.wikidata.org/wiki/Wikidata:Main_Page "
+echo "      : Thank you Wikidata Contributors ! "
+make import-wikidata
+
+echo " "
+echo "-------------------------------------------------------------------------------------"
+echo "====> : Start SQL postprocessing:  ./build/sql/* -> PostgreSQL "
 echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/blob/master/bin/import-sql"
 # If the output contains a WARNING, stop further processing
 # Adapted from https://unix.stackexchange.com/questions/307562
@@ -250,15 +244,8 @@ make psql-analyze
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing Wikidata: Wikidata Query Service -> PostgreSQL"
-echo "      : The Wikidata license: CC0 - https://www.wikidata.org/wiki/Wikidata:Main_Page "
-echo "      : Thank you Wikidata Contributors ! "
-make import-wikidata
-
-echo " "
-echo "-------------------------------------------------------------------------------------"
 echo "====> : Testing PostgreSQL tables to match layer definitions metadata"
-docker-compose run $DC_OPTS openmaptiles-tools test-perf openmaptiles.yaml --test null --no-color
+make test-perf-null
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
@@ -283,17 +270,13 @@ echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : Inputs - Outputs md5sum for debugging "
 rm -f ./data/quickstart_checklist.chk
-md5sum build/mapping.yaml                     >> ./data/quickstart_checklist.chk
-md5sum build/tileset.sql                      >> ./data/quickstart_checklist.chk
-md5sum build/openmaptiles.tm2source/data.yml  >> ./data/quickstart_checklist.chk
-md5sum "./data/${testdata}"                   >> ./data/quickstart_checklist.chk
-md5sum ./data/tiles.mbtiles                   >> ./data/quickstart_checklist.chk
-md5sum ./data/docker-compose-config.yml       >> ./data/quickstart_checklist.chk
-md5sum ./data/osmstat.txt                     >> ./data/quickstart_checklist.chk
+{
+  find build -type f | sort | xargs md5sum ;
+  find data -type f | sort | xargs md5sum ;
+} >> ./data/quickstart_checklist.chk
 cat ./data/quickstart_checklist.chk
 
 ENDTIME=$(date +%s)
-ENDDATE=$(date +"%Y-%m-%dT%H:%M%z")
 if stat --help >/dev/null 2>&1; then
   MODDATE=$(stat -c %y "./data/${testdata}" )
 else
@@ -327,8 +310,8 @@ echo "We saved the log file to $log_file  ( for debugging ) You can compare with
 echo " "
 echo "Start experimenting! And check the QUICKSTART.MD file!"
 echo " "
-echo "*  Use   make start-postserve    to explore tile generation on request"
-echo "*  Use   make start-tileserver   to view pre-generated tiles"
+echo "*  Use   make maputnik-start     to explore tile generation on request"
+echo "*  Use   make tileserver-start   to view pre-generated tiles"
 echo " "
 echo "Available help commands (make help)  "
 make help
