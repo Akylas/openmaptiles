@@ -139,7 +139,7 @@ layer:
       values:
       - 1
     ele: Elevation in meters
-    osmId: osm_id
+    osmid: osm_id
     historic: historic description
     osm_id: osm_id
   datasource:
