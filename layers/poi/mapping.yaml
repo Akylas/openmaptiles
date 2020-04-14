@@ -105,7 +105,6 @@ def_poi_mapping_leisure: &poi_mapping_leisure
   - miniature_golf
   - park
   - pitch
-  - sports_centre
   - stadium
   - swimming_area
   - swimming_pool
