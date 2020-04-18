@@ -9,6 +9,29 @@
 --);
 --CREATE INDEX IF NOT EXISTS landcover_grouped_gen2_geometry_idx ON landcover_grouped_gen2 USING gist(geometry);
 
+
+
+CREATE OR REPLACE FUNCTION filter_rings(geometry, DOUBLE PRECISION)
+    RETURNS geometry AS
+$BODY$
+SELECT ST_BuildArea(ST_Collect(b.final_geom)) AS filtered_geom
+    FROM (SELECT ST_MakePolygon((/* Get outer ring of polygon */
+    SELECT ST_ExteriorRing(a.the_geom) AS outer_ring /* ie the outer ring */
+    ),  ARRAY(/* Get all inner rings > a particular area */
+        SELECT ST_ExteriorRing(b.geom) AS inner_ring
+        FROM (SELECT (ST_DumpRings(a.the_geom)).*) b
+        WHERE b.path[1] > 0 /* ie not the outer ring */
+        AND ST_Area(b.geom) > $2 
+    ) ) AS final_geom
+            FROM (SELECT ST_GeometryN(ST_Multi($1),/*ST_Multi converts any Single Polygons to MultiPolygons */
+                                    generate_series(1,ST_NumGeometries(ST_Multi($1)))
+                                    ) AS the_geom
+                ) a
+        ) b
+$BODY$
+    LANGUAGE 'sql' IMMUTABLE;
+
+
 CREATE OR REPLACE FUNCTION landcover_class(subclass VARCHAR) RETURNS TEXT AS $$
     SELECT CASE
         %%FIELD_MAPPING: class %%
@@ -16,6 +39,93 @@ CREATE OR REPLACE FUNCTION landcover_class(subclass VARCHAR) RETURNS TEXT AS $$
 $$
 LANGUAGE SQL
 IMMUTABLE PARALLEL SAFE;
+
+
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+-- etldoc: osm_landcover_polygon -> landcover_grouped
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped AS (
+	SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_geometry_idx ON landcover_grouped USING gist(geometry);
+
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen1 CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+-- etldoc: osm_landcover_polygon_gen1 -> landcover_grouped_gen1
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen1 CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped_gen1 AS (
+	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	FROM (
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 50000),0.0001))) AS geometry, subclass, name
+	  FROM osm_landcover_polygon_gen1
+	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
+	) AS grouped_measurements
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_gen1_geometry_idx ON landcover_grouped_gen1 USING gist(geometry);
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen2 CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+
+-- etldoc: osm_landcover_polygon_gen2 -> landcover_grouped_gen2
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen2 CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped_gen2 AS (
+	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	FROM (
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 100000),0.0001))) AS geometry, subclass, name
+	  FROM osm_landcover_polygon_gen2
+	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
+	) AS grouped_measurements
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_gen2_geometry_idx ON landcover_grouped_gen2 USING gist(geometry);
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen3 CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+
+-- etldoc: osm_landcover_polygon_gen3 -> landcover_grouped_gen3
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen3 CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped_gen3 AS (
+	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	FROM (
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 200000),0.0001))) AS geometry, subclass, name
+	  FROM osm_landcover_polygon_gen3
+	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
+	) AS grouped_measurements
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_gen3_geometry_idx ON landcover_grouped_gen3 USING gist(geometry);
+
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen4 CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+-- etldoc: osm_landcover_polygon_gen4 -> landcover_grouped_gen4
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen4 CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped_gen4 AS (
+	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	FROM (
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 500000),0.0001))) AS geometry, subclass, name
+	  FROM osm_landcover_polygon_gen4
+	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
+	) AS grouped_measurements
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_gen4_geometry_idx ON landcover_grouped_gen4 USING gist(geometry);
+
+-- This statement can be deleted after the water importer image stops creating this object as a table
+DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen5 CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+-- etldoc: osm_landcover_polygon_gen5 -> landcover_grouped_gen5
+DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen5 CASCADE;
+CREATE MATERIALIZED VIEW landcover_grouped_gen5 AS (
+	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	FROM (
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 1000000),0.0001))) AS geometry, subclass, name
+	  FROM osm_landcover_polygon_gen5
+	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
+	) AS grouped_measurements
+);
+CREATE INDEX IF NOT EXISTS landcover_grouped_gen5_geometry_idx ON landcover_grouped_gen4 USING gist(geometry);
+
+
 
 -- etldoc: ne_110m_glaciated_areas ->  landcover_z0
 CREATE OR REPLACE VIEW landcover_z0 AS (
@@ -49,33 +159,62 @@ CREATE OR REPLACE VIEW landcover_z8 AS (
 );
 
 CREATE OR REPLACE VIEW landcover_z9 AS (
-    -- etldoc: osm_landcover_polygon_gen5 ->  landcover_z9
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon_gen5
+    -- etldoc: landcover_grouped_gen5 ->  landcover_z9
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped_gen5
 );
 
 CREATE OR REPLACE VIEW landcover_z10 AS (
-    -- etldoc: osm_landcover_polygon_gen4 ->  landcover_z10
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon_gen4
+    -- etldoc: landcover_grouped_gen4 ->  landcover_z10
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped_gen4
 );
 
 CREATE OR REPLACE VIEW landcover_z11 AS (
-    -- etldoc: osm_landcover_polygon_gen3 ->  landcover_z11
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon_gen3
+    -- etldoc: landcover_grouped_gen3 ->  landcover_z11
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped_gen3
 );
 
 CREATE OR REPLACE VIEW landcover_z12 AS (
-    -- etldoc: osm_landcover_polygon_gen2 ->  landcover_z12
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon_gen2
+    -- etldoc: landcover_grouped_gen2 ->  landcover_z12
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped_gen2
 );
+
+
+-- UPDATE my_spatial_table t
+-- SET geom = a.geom
+-- FROM (
+--     SELECT osm_id, ST_Collect(ST_MakePolygon(geom)) AS geom
+--     FROM (
+--         SELECT osm_id, ST_NRings(geom) AS nrings, 
+--             ST_ExteriorRing((ST_Dump(geom)).geom) AS geom
+--         FROM my_spatial_table
+--         WHERE ST_NRings(geom) > 1
+--         ) s
+--     GROUP BY osm_id, nrings
+--     HAVING nrings > COUNT(osm_id)
+--     ) a
+-- WHERE t.gid = a.gid;
 
 CREATE OR REPLACE VIEW landcover_z13 AS (
     -- etldoc: osm_landcover_polygon_gen1 ->  landcover_z13
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon_gen1
+
+    -- SELECT osm_id, ST_Collect(ST_MakePolygon(geometry)) AS geometry, subclass, name
+	-- FROM (
+    --     SELECT osm_id, 
+    --         ST_ExteriorRing((ST_Dump(geometry)).geom) AS geometry, subclass, name
+    --     FROM landcover_grouped_gen1
+    --     WHERE ST_NumInteriorRings(geometry) >= 1 AND ST_GeometryType(geometry) = 'ST_Polygon'
+    --     ) as s
+    -- GROUP BY osm_id, subclass, name
+    -- UNION ALL
+    -- SELECT * FROM landcover_grouped_gen1
+    --     WHERE ST_NumInteriorRings(geometry)  = 0 OR ST_GeometryType(geometry) = 'ST_MultiPolygon'
+
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped_gen1
 );
 
 CREATE OR REPLACE VIEW landcover_z14 AS (
     -- etldoc: osm_landcover_polygon ->  landcover_z14
-    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
+    SELECT osm_id, geometry, subclass, name FROM landcover_grouped
 );
 CREATE OR REPLACE VIEW landcover_linestring AS (
     -- etldoc: osm_landcover_linestring ->  landcover_cliffs
