@@ -209,22 +209,6 @@ indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT,
         )
         UNION ALL
 
-        -- -- etldoc: osm_mtb_linestring       ->  layer_transportation:z8_
-        -- SELECT
-        --     osm_id, geometry, 
-        --     highway, NULL AS construction, NULL AS railway, NULL AS aerialway, NULL AS shipway,
-        --     NULL AS public_transport, NULL AS service,
-        --     NULL::boolean AS is_bridge, NULL::boolean AS is_tunnel,
-        --     NULL::boolean AS is_ford,
-        --     NULL::boolean AS is_ramp, NULL::int AS is_oneway, NULL as man_made,
-        --     NULL::int AS layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
-        --     NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale, NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-        --     NULL AS grooming, NULL AS type, NULL as difficulty,
-        --     NULL as surface, z_order
-        -- from osm_mtb_linestring
-        -- WHERE zoom_level >= 8
-        -- UNION ALL
-
         -- etldoc: osm_railway_linestring_gen5  ->  layer_transportation:z8
         SELECT
             osm_id, geometry,
