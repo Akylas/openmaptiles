@@ -1,7 +1,7 @@
 -- etldoc: layer_building[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="layer_building | <z13> z13 | <z14_> z14+ " ] ;
 
-CREATE INDEX IF NOT EXISTS osm_building_relation_building_idx ON osm_building_relation(building) WHERE ST_GeometryType(geometry) = 'ST_Polygon';
+CREATE INDEX IF NOT EXISTS osm_building_relation_building_idx ON osm_building_relation(building) WHERE building = '' AND ST_GeometryType(geometry) = 'ST_Polygon';
 CREATE INDEX IF NOT EXISTS osm_building_relation_member_idx ON osm_building_relation(member);
 --CREATE INDEX IF NOT EXISTS osm_building_associatedstreet_role_idx ON osm_building_associatedstreet(role) WHERE ST_GeometryType(geometry) = 'ST_Polygon';
 --CREATE INDEX IF NOT EXISTS osm_building_street_role_idx ON osm_building_street(role) WHERE ST_GeometryType(geometry) = 'ST_Polygon';
@@ -52,7 +52,8 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
                   FALSE as hide_3d
          FROM
          osm_building_polygon obp
-         WHERE osm_id < 0
+         -- OSM mulipolygons once imported can give unique postgis polygons with holes, or multi parts polygons
+         WHERE osm_id < 0 AND ST_GeometryType(geometry) IN ('ST_Polygon', 'ST_MultiPolygon')
 
          UNION ALL
          -- etldoc: osm_building_polygon -> layer_building:z14_
@@ -66,7 +67,8 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
          FROM
          osm_building_polygon obp
            LEFT JOIN osm_building_relation obr ON (obr.member = obp.osm_id)
-         WHERE obp.osm_id >= 0
+         -- Only check for ST_Polygon as we exclude buildings from relations keeping only positive ids
+         WHERE obp.osm_id >= 0 AND ST_GeometryType(obp.geometry) = 'ST_Polygon'
 );
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
@@ -75,7 +77,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_he
         (class in ('yes') and (nullif(amenity,'') is null and nullif(shop,'') is null and nullif(tourism,'') is null and nullif(leisure,'') is null and nullif(aerialway,'') is null)) then nullif(name,'') end as name, 
         nullif(class,'yes') as class, render_height, 
         nullif(render_min_height,0) as render_min_height,
-        CASE WHEN hide_3d THEN TRUE END AS hide_3d
+      CASE WHEN hide_3d THEN TRUE END AS hide_3d
     FROM (
         -- etldoc: osm_building_polygon_gen1 -> layer_building:z13
         SELECT
@@ -88,7 +90,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_he
         -- etldoc: osm_building_polygon -> layer_building:z14_
         SELECT DISTINCT ON (osm_id)
            osm_id, geometry, name, class,amenity,shop,tourism,leisure,aerialway,
-           ceil(COALESCE(height, levels*3.66,5))::int AS render_height,
+           ceil( COALESCE(height, levels*3.66,5))::int AS render_height,
            floor(COALESCE(min_height, min_level*3.66,0))::int AS render_min_height,
            hide_3d
         FROM osm_all_buildings

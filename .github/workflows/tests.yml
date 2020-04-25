@@ -1,0 +1,29 @@
+# Workflow to validate OMT`s new Pull Requests and commits pushed into OMT repo
+
+name: OpenMapTiles CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+
+  integrity_test:
+    name: Run integrity test
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Load test data into DB and run performance test
+        id: main
+        run: |
+          mkdir -p artifacts
+          env > artifacts/refs.txt
+          echo "GITHUB_SHA = $GITHUB_SHA" >> artifacts/refs.txt
+          echo "GITHUB_REF = $GITHUB_REF" >> artifacts/refs.txt
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: results
+          path: artifacts
