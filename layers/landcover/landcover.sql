@@ -43,13 +43,13 @@ IMMUTABLE PARALLEL SAFE;
 
 
 -- This statement can be deleted after the water importer image stops creating this object as a table
-DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
--- etldoc: osm_landcover_polygon -> landcover_grouped
-DROP MATERIALIZED VIEW IF EXISTS landcover_grouped CASCADE;
-CREATE MATERIALIZED VIEW landcover_grouped AS (
-	SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
-);
-CREATE INDEX IF NOT EXISTS landcover_grouped_geometry_idx ON landcover_grouped USING gist(geometry);
+-- DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped CASCADE; EXCEPTION WHEN wrong_object_type THEN END; $$ language 'plpgsql';
+-- -- etldoc: osm_landcover_polygon -> landcover_grouped
+-- DROP MATERIALIZED VIEW IF EXISTS landcover_grouped CASCADE;
+-- CREATE MATERIALIZED VIEW landcover_grouped AS (
+-- 	SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
+-- );
+-- CREATE INDEX IF NOT EXISTS landcover_grouped_geometry_idx ON landcover_grouped USING gist(geometry);
 
 
 -- This statement can be deleted after the water importer image stops creating this object as a table
@@ -57,9 +57,9 @@ DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen1 CASCADE; EXCEPTION WHEN 
 -- etldoc: osm_landcover_polygon_gen1 -> landcover_grouped_gen1
 DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen1 CASCADE;
 CREATE MATERIALIZED VIEW landcover_grouped_gen1 AS (
-	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	SELECT osm_id, ST_Simplify((ST_DUMP(geometry)).geom , 20.0) AS geometry, subclass, name
 	FROM (
-	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 50000),0.0001))) AS geometry, subclass, name
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 100000),0.0001))) AS geometry, subclass, name
 	  FROM osm_landcover_polygon_gen1
 	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
 	) AS grouped_measurements
@@ -72,9 +72,9 @@ DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen2 CASCADE; EXCEPTION WHEN 
 -- etldoc: osm_landcover_polygon_gen2 -> landcover_grouped_gen2
 DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen2 CASCADE;
 CREATE MATERIALIZED VIEW landcover_grouped_gen2 AS (
-	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	SELECT osm_id, ST_Simplify((ST_DUMP(geometry)).geom , 40.0) AS geometry, subclass, name
 	FROM (
-	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 100000),0.0001))) AS geometry, subclass, name
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 400000),0.0001))) AS geometry, subclass, name
 	  FROM osm_landcover_polygon_gen2
 	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
 	) AS grouped_measurements
@@ -87,9 +87,9 @@ DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen3 CASCADE; EXCEPTION WHEN 
 -- etldoc: osm_landcover_polygon_gen3 -> landcover_grouped_gen3
 DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen3 CASCADE;
 CREATE MATERIALIZED VIEW landcover_grouped_gen3 AS (
-	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	SELECT osm_id, ST_Simplify((ST_DUMP(geometry)).geom , 80.0) AS geometry, subclass, name
 	FROM (
-	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 200000),0.0001))) AS geometry, subclass, name
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 1000000),0.0001))) AS geometry, subclass, name
 	  FROM osm_landcover_polygon_gen3
 	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
 	) AS grouped_measurements
@@ -102,9 +102,9 @@ DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen4 CASCADE; EXCEPTION WHEN 
 -- etldoc: osm_landcover_polygon_gen4 -> landcover_grouped_gen4
 DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen4 CASCADE;
 CREATE MATERIALIZED VIEW landcover_grouped_gen4 AS (
-	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	SELECT osm_id, ST_Simplify((ST_DUMP(geometry)).geom , 160.0) AS geometry, subclass, name
 	FROM (
-	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 500000),0.0001))) AS geometry, subclass, name
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 2000000),0.0001))) AS geometry, subclass, name
 	  FROM osm_landcover_polygon_gen4
 	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
 	) AS grouped_measurements
@@ -116,9 +116,9 @@ DO $$ BEGIN DROP TABLE IF EXISTS landcover_grouped_gen5 CASCADE; EXCEPTION WHEN 
 -- etldoc: osm_landcover_polygon_gen5 -> landcover_grouped_gen5
 DROP MATERIALIZED VIEW IF EXISTS landcover_grouped_gen5 CASCADE;
 CREATE MATERIALIZED VIEW landcover_grouped_gen5 AS (
-	SELECT osm_id, (ST_DUMP(geometry)).geom AS geometry, subclass, name
+	SELECT osm_id, ST_Simplify((ST_DUMP(geometry)).geom , 320.0) AS geometry, subclass, name
 	FROM (
-	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 1000000),0.0001))) AS geometry, subclass, name
+	  SELECT max(osm_id) AS osm_id, (ST_UNION(ST_SNAPTOGRID(filter_rings(geometry, 5000000),0.0001))) AS geometry, subclass, name
 	  FROM osm_landcover_polygon_gen5
 	  GROUP BY LabelGrid(geometry, 150000), landcover_class(subclass), subclass, name
 	) AS grouped_measurements
@@ -214,7 +214,7 @@ CREATE OR REPLACE VIEW landcover_z13 AS (
 
 CREATE OR REPLACE VIEW landcover_z14 AS (
     -- etldoc: osm_landcover_polygon ->  landcover_z14
-    SELECT osm_id, geometry, subclass, name FROM landcover_grouped
+    SELECT osm_id, geometry, subclass, name FROM osm_landcover_polygon
 );
 CREATE OR REPLACE VIEW landcover_linestring AS (
     -- etldoc: osm_landcover_linestring ->  landcover_cliffs
