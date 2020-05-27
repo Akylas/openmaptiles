@@ -4,12 +4,12 @@ layer:
       All [OSM Buildings](http://wiki.openstreetmap.org/wiki/Buildings). All building tags are imported ([`building=*`](http://wiki.openstreetmap.org/wiki/Key:building)). The buildings are not yet ready for 3D rendering support and any help to improve
       this is welcomed.
   buffer_size: 4
-datasource:
+  datasource:
     geometry_field: geometry
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT geometry, name, render_height, render_min_height, hide_3d FROM layer_building(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT osm_id, geometry, name, render_height, render_min_height, hide_3d FROM layer_building(!bbox!, z(!scale_denominator!))) AS t
   fields:
     name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the POI.
     

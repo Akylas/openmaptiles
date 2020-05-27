@@ -19,13 +19,11 @@ CREATE OR REPLACE VIEW osm_all_buildings AS (
 
          -- etldoc: osm_building_polygon -> layer_building:z14_
          -- Standalone buildings
-         SELECT obp.osm_id, obp.geometry,
+         SELECT obp.osm_id,obp.geometry,obp.name, obp.building::text as class,obp.amenity,obp.shop,obp.tourism,obp.leisure,obp.aerialway,
                   COALESCE(CleanNumeric(obp.height), CleanNumeric(obp.buildingheight)) as height,
                   COALESCE(CleanNumeric(obp.min_height), CleanNumeric(obp.buildingmin_height)) as min_height,
                   COALESCE(CleanNumeric(obp.levels), CleanNumeric(obp.buildinglevels)) as levels,
                   COALESCE(CleanNumeric(obp.min_level), CleanNumeric(obp.buildingmin_level)) as min_level,
-                  nullif(obp.material, '') AS material,
-                  nullif(obp.colour, '') AS colour,
                   obr.role IS NOT NULL AS hide_3d
          FROM
          osm_building_polygon obp
