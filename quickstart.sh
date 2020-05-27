@@ -7,19 +7,43 @@ set -o nounset
 ###########################################
 # OpenMapTiles quickstart.sh for x86_64 linux
 #
+# Usage:
+#   ./quickstart.sh [--empty] [area [geofabrik|osmfr|bbbike]]
+#
+# Use a preloaded docker image to speed up, unless the --empty flag is used.
+#
+# Servers:
+#   geofabik: http://download.geofabrik.de (default)
+#   osmfr:    http://download.openstreetmap.fr (default for hierarchical area names)
+#   bbbike:   https://www.bbbike.org (default for capitalized area names)
+#
 # Example calls ...
 # ./quickstart.sh
 # ./quickstart.sh africa
+# ./quickstart.sh africa geofabrik
+# ./quickstart.sh africa osmfr
 # ./quickstart.sh alabama
 # ./quickstart.sh alaska
 # ./quickstart.sh albania
 # ./quickstart.sh alberta
 # ./quickstart.sh alps
+# ./quickstart.sh europe/austria
+# ./quickstart.sh europe/austria/salzburg osmfr
+# ./quickstart.sh Adelaide
+# ./quickstart.sh Adelaide bbbike
 # ....
 #
-# to list areas :  make download-geofabrik-list
+# to list geofabrik areas:  make download-geofabrik-list
 # see more QUICKSTART.md
 #
+
+# If --empty is not given, use preloaded docker image to speed up
+if [ $# -gt 0 ] && [[ $1 == --empty ]]; then
+  export USE_PRELOADED_IMAGE=""
+  shift
+else
+  export USE_PRELOADED_IMAGE=true
+fi
 
 if [ $# -eq 0 ]; then
     osm_area=albania                         #  default test country
@@ -27,7 +51,23 @@ if [ $# -eq 0 ]; then
 else
     osm_area=$1
 fi
-testdata="${osm_area}-latest.osm.pbf"
+
+if [ $# -eq 2 ]; then
+    osm_server=$2
+else
+  if [ ${osm_area} != $(basename ${osm_area}) ]; then
+    # Only openstreetmap.fr has area hierarchy
+    osm_server=osmfr
+  elif [[ ${osm_area} == [[:upper:]]* ]]; then
+    # Only bbbike area names are capitalized
+    osm_server=bbbike
+  else
+    # default OSM server
+    osm_server=geofabrik
+  fi
+fi
+
+pbf_file="./data/${osm_area##*/}-latest.osm.pbf"
 
 ##  Min versions ...
 MIN_COMPOSE_VER=1.7.1
@@ -82,6 +122,8 @@ echo "--------------------------------------------------------------------------
 echo "====> : OpenMapTiles quickstart! [ https://github.com/openmaptiles/openmaptiles ]    "
 echo "      : This will be logged to the $log_file file (for debugging) and to the screen"
 echo "      : Area             : $osm_area "
+echo "      : Download Server  : $osm_server "
+echo "      : Preloaded Image  : $USE_PRELOADED_IMAGE "
 echo "      : Git version      : $githash "
 echo "      : Started          : $STARTDATE "
 echo "      : Your bash version: $BASH_VERSION"
@@ -116,7 +158,7 @@ fi
 echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : Stopping running services & removing old containers"
-make db-destroy
+make destroy-db
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
@@ -133,22 +175,22 @@ echo "--------------------------------------------------------------------------
 echo "====> : Removing old MBTILES if exists ( ./data/*.mbtiles ) "
 rm -f ./data/*.mbtiles
 
-if [[ ! -f "./data/${testdata}" || ! -f "./data/docker-compose-config.yml" ]]; then
+if [[ ! -f "${pbf_file}" || ! -f "./data/docker-compose-config.yml" ]]; then
     echo " "
     echo "-------------------------------------------------------------------------------------"
-    echo "====> : Downloading ${osm_area} from Geofabrik..."
+    echo "====> : Downloading ${osm_area} from ${osm_server}..."
     rm -rf ./data/*
-    make download-geofabrik "area=${osm_area}"
+    make download-${osm_server} "area=${osm_area}"
 else
     echo " "
     echo "-------------------------------------------------------------------------------------"
-    echo "====> : The testdata ./data/$testdata exists, we don't need to download!"
+    echo "====> : The pbf file $pbf_file exists, we don't need to download!"
 fi
 
 
-if [ !  -f "./data/${testdata}" ]; then
+if [ !  -f "${pbf_file}" ]; then
     echo " "
-    echo "Missing ./data/$testdata , Download or Parameter error? "
+    echo "Missing $pbf_file , Download or Parameter error? "
     exit 1
 fi
 
@@ -166,7 +208,7 @@ make all
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-if [ $# -eq 0 ] || [ $# -eq 1 ]; then
+if [[ "$USE_PRELOADED_IMAGE" == true ]]; then
   echo "====> : Start PostgreSQL service using postgis image preloaded with this data:"
   echo "      : * Water data from http://osmdata.openstreetmap.de"
   echo "      :   Data license: https://osmdata.openstreetmap.de/info/license.html"
@@ -177,16 +219,16 @@ if [ $# -eq 0 ] || [ $# -eq 1 ]; then
   echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-data"
   echo "      :   includes all data from the import-data image"
   echo "      :"
-  echo "      : Use two-parameter quickstart to start with an empty database:"
-  echo "      :   ./quickstart.sh albania empty"
-  echo "      : If desired, you can manually import data by one using these commands:"
-  echo "      :   make db-destroy"
-  echo "      :   make db-start"
+  echo "      : Use the --empty flag to start with an empty database:"
+  echo "      :   ./quickstart.sh --empty albania "
+  echo "      : If desired, you can manually import data by using these commands:"
+  echo "      :   make destroy-db"
+  echo "      :   make start-db"
   echo "      :   make import-data"
   echo "      :"
   echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/postgis-preloaded"
   echo "      : Thank you: https://www.postgresql.org !  Thank you http://postgis.org !"
-  make db-start-preloaded
+  make start-db-preloaded
 else
   echo "====> : Start PostgreSQL service using empty database and importing all the data:"
   echo "      : * Water data from http://osmdata.openstreetmap.de"
@@ -199,23 +241,23 @@ else
   echo "      :   includes all data from the import-data image"
   echo "      :"
   echo "      : Thank you: https://www.postgresql.org !  Thank you http://postgis.org !"
-  make db-start
+  make start-db
   make import-data
 fi
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing OpenStreetMap data: ./data/${testdata} -> imposm3[./build/mapping.yaml] -> PostgreSQL"
+echo "====> : Start importing OpenStreetMap data: ${pbf_file} -> imposm3[./build/mapping.yaml] -> PostgreSQL"
 echo "      : Imposm3 documentation: https://imposm.org/docs/imposm3/latest/index.html "
 echo "      :   Thank you Omniscale! "
 echo "      :   Source code: https://github.com/openmaptiles/openmaptiles-tools/tree/master/docker/import-osm "
 echo "      : The OpenstreetMap data license: https://www.openstreetmap.org/copyright (ODBL) "
 echo "      : Thank you OpenStreetMap Contributors ! "
-make import-osm
+make import-osm "PBF_FILE=${pbf_file}"
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
-echo "====> : Start importing border data from ./data/${testdata} into PostgreSQL using osmborder"
+echo "====> : Start importing border data from ${pbf_file} into PostgreSQL using osmborder"
 echo "      : Source code: https://github.com/pnorman/osmborder"
 echo "      : Data license: http://www.openstreetmap.org/copyright"
 echo "      : Thank you: Paul Norman"
@@ -234,13 +276,12 @@ echo "====> : Start SQL postprocessing:  ./build/sql/* -> PostgreSQL "
 echo "      : Source code: https://github.com/openmaptiles/openmaptiles-tools/blob/master/bin/import-sql"
 # If the output contains a WARNING, stop further processing
 # Adapted from https://unix.stackexchange.com/questions/307562
-make import-sql | \
-    awk -v s=": WARNING:" '$0~s{print; print "\n*** WARNING detected, aborting"; exit(1)} 1'
+make import-sql
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : Analyze PostgreSQL tables"
-make psql-analyze
+make analyze-db
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
@@ -264,7 +305,12 @@ make generate-tiles
 echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : Stop PostgreSQL service ( but we keep PostgreSQL data volume for debugging )"
-make db-stop
+make stop-db
+
+echo " "
+echo "-------------------------------------------------------------------------------------"
+echo "====> : Show generated metadata"
+make show-metadata
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
@@ -278,9 +324,9 @@ cat ./data/quickstart_checklist.chk
 
 ENDTIME=$(date +%s)
 if stat --help >/dev/null 2>&1; then
-  MODDATE=$(stat -c %y "./data/${testdata}" )
+  MODDATE=$(stat -c %y "${pbf_file}" )
 else
-  MODDATE=$(stat -f%Sm -t '%F %T %z' "./data/${testdata}" )
+  MODDATE=$(stat -f%Sm -t '%F %T %z' "${pbf_file}" )
 fi
 
 echo " "
@@ -298,7 +344,7 @@ echo " "
 echo "-------------------------------------------------------------------------------------"
 echo "====> : (disk space) We have created the new vectortiles ( ./data/tiles.mbtiles ) "
 echo "      : Please respect the licenses (OdBL for OSM data) of the sources when distributing the MBTiles file."
-echo "      : Created from $testdata ( file moddate: $MODDATE ) "
+echo "      : Created from $pbf_file ( file moddate: $MODDATE ) "
 echo "      : Size: "
 ls -la ./data/*.mbtiles
 
@@ -310,8 +356,8 @@ echo "We saved the log file to $log_file  ( for debugging ) You can compare with
 echo " "
 echo "Start experimenting! And check the QUICKSTART.MD file!"
 echo " "
-echo "*  Use   make maputnik-start     to explore tile generation on request"
-echo "*  Use   make tileserver-start   to view pre-generated tiles"
+echo "*  Use   make start-maputnik     to explore tile generation on request"
+echo "*  Use   make start-tileserver   to view pre-generated tiles"
 echo " "
 echo "Available help commands (make help)  "
 make help

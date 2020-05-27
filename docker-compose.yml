@@ -12,8 +12,7 @@ services:
 
   postgres:
     image: "${POSTGIS_IMAGE:-openmaptiles/postgis}:${TOOLS_VERSION}"
-    # JIT must be disabled for PostgreSQL 11-12 because of slow large MVT query processing
-    command: postgres -c 'jit=off'
+    # Use "command: postgres -c jit=off" for PostgreSQL 11+ because of slow large MVT query processing
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -68,14 +67,15 @@ services:
       BBOX: ${BBOX}
       MIN_ZOOM: ${MIN_ZOOM}
       MAX_ZOOM: ${MAX_ZOOM}
+      FILTER_MAPNIK_OUTPUT: ${FILTER_MAPNIK_OUTPUT}
 
   postserve:
     image: "openmaptiles/openmaptiles-tools:${TOOLS_VERSION}"
-    command: postserve openmaptiles.yaml --verbose
+    command: "postserve openmaptiles.yaml --verbose --port ${PPORT:-8090}"
     env_file: .env
     networks:
       - postgres_conn
     ports:
-      - "8090:8090"
+      - "${PPORT:-8090}:${PPORT:-8090}"
     volumes:
       - .:/tileset
