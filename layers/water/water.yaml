@@ -37,6 +37,7 @@ layer:
   datasource:
     query: (SELECT geometry, class, intermittent, brunnel, ele FROM layer_water(!bbox!, z(!scale_denominator!), !pixel_width!::real, !pixel_height!::real)) AS t
 schema:
+  - ./update_water.sql
   - ./water.sql
 datasources:
   - type: imposm3
