@@ -71,22 +71,20 @@ CREATE TABLE IF NOT EXISTS waterway_important.changes(
     id serial primary key,
     is_old boolean,
     name character varying,
-    name_en character varying,
-    name_de character varying,
     tags hstore,
-    unique (is_old, name, name_en, name_de, tags)
+    unique (is_old, name, tags)
 );
 CREATE OR REPLACE FUNCTION waterway_important.store() RETURNS trigger AS $$
 BEGIN
     IF (TG_OP IN ('DELETE', 'UPDATE')) AND OLD.name <> '' AND OLD.waterway = 'river' THEN
-        INSERT INTO waterway_important.changes(is_old, name, name_en, name_de, tags)
-        VALUES (true, OLD.name, OLD.name_en, OLD.name_de, slice_language_tags(OLD.tags))
-        ON CONFLICT(is_old, name, name_en, name_de, tags) DO NOTHING;
+        INSERT INTO waterway_important.changes(is_old, name, tags)
+        VALUES (true, OLD.name, slice_language_tags(OLD.tags))
+        ON CONFLICT(is_old, name, tags) DO NOTHING;
     END IF;
     IF (TG_OP IN ('UPDATE', 'INSERT')) AND NEW.name <> '' AND NEW.waterway = 'river' THEN
-        INSERT INTO waterway_important.changes(is_old, name, name_en, name_de, tags)
-        VALUES (false, NEW.name, NEW.name_en, NEW.name_de, slice_language_tags(NEW.tags))
-        ON CONFLICT(is_old, name, name_en, name_de, tags) DO NOTHING;
+        INSERT INTO waterway_important.changes(is_old, name, tags)
+        VALUES (false, NEW.name, slice_language_tags(NEW.tags))
+        ON CONFLICT(is_old, name, tags) DO NOTHING;
     END IF;
     RETURN NULL;
 END;
@@ -110,22 +108,22 @@ CREATE OR REPLACE FUNCTION waterway_important.refresh() RETURNS trigger AS
     USING waterway_important.changes AS c
     WHERE
         c.is_old AND
-        w.name = c.name AND w.name_en IS NOT DISTINCT FROM c.name_en AND w.name_de IS NOT DISTINCT FROM c.name_de AND w.tags IS NOT DISTINCT FROM c.tags;
+        w.name = c.name AND w.tags IS NOT DISTINCT FROM c.tags;
 
     INSERT INTO osm_important_waterway_linestring
     SELECT
         (ST_Dump(geometry)).geom AS geometry,
-        name, name_en, name_de, tags
+        name, tags
     FROM (
         SELECT
             ST_LineMerge(ST_Union(geometry)) AS geometry,
-            w.name, w.name_en, w.name_de, slice_language_tags(w.tags) AS tags
+            w.name, slice_language_tags(w.tags) AS tags
         FROM osm_waterway_linestring AS w
             JOIN waterway_important.changes AS c ON
-                w.name = c.name AND w.name_en IS NOT DISTINCT FROM c.name_en AND w.name_de IS NOT DISTINCT FROM c.name_de AND slice_language_tags(w.tags) IS NOT DISTINCT FROM c.tags
+                w.name = c.name AND slice_language_tags(w.tags) IS NOT DISTINCT FROM c.tags
         WHERE w.name <> '' AND w.waterway = 'river' AND ST_IsValid(geometry) AND
             NOT c.is_old
-        GROUP BY w.name, w.name_en, w.name_de, slice_language_tags(w.tags)
+        GROUP BY w.name, slice_language_tags(w.tags)
     ) AS waterway_union;
 
     -- REFRESH sm_important_waterway_linestring_gen1
@@ -133,7 +131,7 @@ CREATE OR REPLACE FUNCTION waterway_important.refresh() RETURNS trigger AS
     USING waterway_important.changes AS c
     WHERE
         c.is_old AND
-        w.name = c.name AND w.name_en IS NOT DISTINCT FROM c.name_en AND w.name_de IS NOT DISTINCT FROM c.name_de AND w.tags IS NOT DISTINCT FROM c.tags;
+        w.name = c.name AND w.tags IS NOT DISTINCT FROM c.tags;
 
     INSERT INTO osm_important_waterway_linestring_gen1
     SELECT w.*
@@ -146,7 +144,7 @@ CREATE OR REPLACE FUNCTION waterway_important.refresh() RETURNS trigger AS
     USING waterway_important.changes AS c
     WHERE
         c.is_old AND
-        w.name = c.name AND w.name_en IS NOT DISTINCT FROM c.name_en AND w.name_de IS NOT DISTINCT FROM c.name_de AND w.tags IS NOT DISTINCT FROM c.tags;
+        w.name = c.name AND w.tags IS NOT DISTINCT FROM c.tags;
 
     INSERT INTO osm_important_waterway_linestring_gen2
     SELECT w.*
@@ -159,7 +157,7 @@ CREATE OR REPLACE FUNCTION waterway_important.refresh() RETURNS trigger AS
     USING waterway_important.changes AS c
     WHERE
         c.is_old AND
-        w.name = c.name AND w.name_en IS NOT DISTINCT FROM c.name_en AND w.name_de IS NOT DISTINCT FROM c.name_de AND w.tags IS NOT DISTINCT FROM c.tags;
+        w.name = c.name AND w.tags IS NOT DISTINCT FROM c.tags;
 
     INSERT INTO osm_important_waterway_linestring_gen3
     SELECT w.*

@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION layer_poi(bbox geometry, zoom_level integer, pixel_wi
 RETURNS TABLE(
     osm_id bigint, 
     geometry geometry, 
-    osmId bigint,
+    osmid bigint,
     name text, 
     tags hstore, 
     class text, 
@@ -19,7 +19,7 @@ RETURNS TABLE(
     indoor integer, 
     ele int,
    "rank" int) AS $$
-    SELECT osm_id_hash AS osm_id, geometry, osm_id_hash as osmId, NULLIF(name, '') AS name,
+    SELECT osm_id_hash AS osm_id, geometry, osm_id_hash as osmid, NULLIF(name, '') AS name,
         tags,
         poi_class(subclass, mapping_key) AS class,
         CASE
@@ -51,7 +51,7 @@ RETURNS TABLE(
             osm_id*10 AS osm_id_hash FROM osm_poi_point
             WHERE geometry && bbox
                 AND zoom_level BETWEEN 11 AND 12
-                AND (subclass IN ('alpine_hut', 'wilderness_hut'))
+                AND (subclass IN ('alpine_hut', 'wilderness_hut') OR poi_class(subclass, mapping_key) IN('spring'))
         UNION ALL
         -- etldoc: osm_poi_point ->  layer_poi:z12
         -- etldoc: osm_poi_point ->  layer_poi:z13
@@ -60,7 +60,7 @@ RETURNS TABLE(
             WHERE geometry && bbox
                 AND zoom_level BETWEEN 12 AND 13
                 AND ((subclass='station' AND mapping_key = 'railway')
-                    OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut'))
+                    OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut') OR poi_class(subclass, mapping_key) IN('spring'))
         UNION ALL
 
         -- etldoc: osm_poi_point ->  layer_poi:z14_
@@ -83,7 +83,7 @@ RETURNS TABLE(
             WHERE geometry && bbox
                 AND zoom_level BETWEEN 12 AND 13
                 AND ((subclass='station' AND mapping_key = 'railway')
-                    OR subclass IN ('halt', 'ferry_terminal'))
+                    OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut') OR poi_class(subclass, mapping_key) IN('spring')))
 
         UNION ALL
         -- etldoc: osm_poi_polygon ->  layer_poi:z14_

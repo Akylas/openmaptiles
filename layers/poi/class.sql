@@ -3,9 +3,6 @@ RETURNS INT AS $$
     SELECT CASE class
         WHEN 'hospital' THEN 20
         WHEN 'railway' THEN 40
-        WHEN 'bus' THEN 50
-        WHEN 'tram' THEN 50
-        WHEN 'subway' THEN 50
         WHEN 'harbor' THEN 75
         WHEN 'college' THEN 80
         WHEN 'school' THEN 85
@@ -19,8 +16,12 @@ RETURNS INT AS $$
         WHEN 'park' THEN 120
         WHEN 'drinking_water' THEN 125
         WHEN 'watering_place' THEN 126
-        WHEN 'library' THEN 130
-        WHEN 'police' THEN 135
+        WHEN 'bakery' THEN 127
+        WHEN 'bus' THEN 128
+        WHEN 'tram' THEN 128
+        WHEN 'subway' THEN 128
+        WHEN 'police' THEN 130
+        WHEN 'library' THEN 135
         WHEN 'post' THEN 140
         WHEN 'golf' THEN 150
         WHEN 'grocery' THEN 500

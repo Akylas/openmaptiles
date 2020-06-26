@@ -66,6 +66,7 @@ RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_he
     ) AS zoom_levels
     ORDER BY render_height ASC, ST_YMin(geometry) DESC;
 $$
-LANGUAGE SQL IMMUTABLE;
+LANGUAGE SQL IMMUTABLE
+PARALLEL SAFE;
 
 -- not handled: where a building outline covers building parts

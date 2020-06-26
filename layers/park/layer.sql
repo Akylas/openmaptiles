@@ -3,9 +3,9 @@
 
 CREATE OR REPLACE FUNCTION layer_park(bbox geometry, zoom_level int, pixel_width numeric, pixel_height numeric)
 RETURNS TABLE(osm_id bigint, geometry geometry, 
-    osmId bigint,
+    osmid bigint,
     class text, name text, tags hstore, rank int, way_pixels bigint) AS $$
-    SELECT osm_id, geometry, osm_id as osmId, class, name, tags, rank,way_pixels
+    SELECT osm_id, geometry, osm_id as osmid, class, name, tags, rank,way_pixels
     FROM (
     SELECT osm_id, geometry,
 COALESCE(

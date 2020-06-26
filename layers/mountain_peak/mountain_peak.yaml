@@ -28,7 +28,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, osmId, name, wikidata, wikipedia, class, ele, rank, summitcross FROM layer_mountain_peak(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT osm_id, geometry, osmid, name, wikidata, wikipedia, class, ele, rank, summitcross FROM layer_mountain_peak(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./update_peak_point.sql
   - ./layer.sql

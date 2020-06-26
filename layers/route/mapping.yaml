@@ -28,7 +28,7 @@ tables:
       key: route
       type: string
     - name: geometry
-      type: geometry
+      type: validated_geometry
     - *ref
     - *network
     - *name

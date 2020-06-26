@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION layer_mountain_peak(
   RETURNS TABLE(
     osm_id bigint,
     geometry geometry,
-    osmId bigint,
+    osmid bigint,
     name text,
     wikidata text,
     wikipedia text,
@@ -23,7 +23,7 @@ $$
   SELECT
     osm_id,
     geometry,
-    osm_id as osmId,
+    osm_id as osmid,
     NULLIF(name, '') as name,
     NULLIF(wikidata, '') AS wikidata,
     NULLIF(wikipedia, '') AS wikipedia,
