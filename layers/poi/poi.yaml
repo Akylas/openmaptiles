@@ -149,7 +149,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, osmid, name, class, subclass, historic, agg_stop, layer, level, indoor, rank, ele FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
+    query: (SELECT geometry, osmid, name, class, subclass, historic, agg_stop, layer, level, capacity, indoor, rank, ele FROM layer_poi(!bbox!, z(!scale_denominator!), !pixel_width!)) AS t
 schema:
   - ./public_transport_stop_type.sql
   - ./class.sql
