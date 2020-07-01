@@ -267,11 +267,12 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_
 -- etldoc: layer_route[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="<sql> layer_route |<z6> z6 |<z7> z7 |<z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
+DROP FUNCTION layer_route(geometry,integer);
 CREATE OR REPLACE FUNCTION layer_route (bbox geometry, zoom_level integer)
     RETURNS TABLE (
-        geometry geometry,
-        member_id bigint,
         osm_id bigint,
+        member_id bigint,
+        geometry geometry,
         class text,
         network integer,
         name text,

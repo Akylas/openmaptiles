@@ -12,7 +12,7 @@ CREATE OR REPLACE FUNCTION layer_aerodrome_label(bbox geometry,
                 class    text,
                 iata     text,
                 icao     text,
-                ele      i
+                ele      int
             )
 AS
 $$

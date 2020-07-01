@@ -1,4 +1,8 @@
-CREATE OR REPLACE FUNCTION brunnel (is_bridge bool, is_tunnel bool, is_ford bool)
+CREATE OR REPLACE FUNCTION brunnel (
+    is_bridge bool,
+    is_tunnel bool,
+    is_ford bool
+)
     RETURNS text
     AS $$
     SELECT
@@ -17,11 +21,15 @@ IMMUTABLE STRICT PARALLEL SAFE;
 -- The classes for highways are derived from the classes used in ClearTables
 -- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
 
-CREATE OR REPLACE FUNCTION highway_class (highway text, public_transport text, construction text)
+CREATE OR REPLACE FUNCTION highway_class (
+    highway text,
+    public_transport text,
+    construction text
+)
     RETURNS text
     AS $$
     SELECT
-        CASE % % FIELD_MAPPING: class % %
+        CASE %% FIELD_MAPPING: class %%
         END;
 
 $$
@@ -31,7 +39,9 @@ IMMUTABLE PARALLEL SAFE;
 -- The classes for railways are derived from the classes used in ClearTables
 -- https://github.com/ClearTables/ClearTables/blob/master/transportation.lua
 
-CREATE OR REPLACE FUNCTION railway_class (railway text)
+CREATE OR REPLACE FUNCTION railway_class (
+    railway text
+)
     RETURNS text
     AS $$
     SELECT
@@ -48,7 +58,9 @@ IMMUTABLE STRICT PARALLEL SAFE;
 -- Limit service to only the most important values to ensure
 -- we always know the values of service
 
-CREATE OR REPLACE FUNCTION service_value (service text)
+CREATE OR REPLACE FUNCTION service_value (
+    service text
+)
     RETURNS text
     AS $$
     SELECT
@@ -63,7 +75,9 @@ IMMUTABLE STRICT PARALLEL SAFE;
 -- Limit surface to only the most important values to ensure
 -- we always know the values of surface
 
-CREATE OR REPLACE FUNCTION surface_value (surface text)
+CREATE OR REPLACE FUNCTION surface_value (
+    surface text
+)
     RETURNS text
     AS $$
     SELECT

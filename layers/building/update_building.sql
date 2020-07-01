@@ -1,5 +1,5 @@
 DROP TRIGGER IF EXISTS trigger_refresh ON buildings.updates;
-DROP TRIGGER IF EXISTS trigger_flag ON osm_building_polygon;
+-- DROP TRIGGER IF EXISTS trigger_flag ON osm_building_polygon;
 
 --creating aggregated building blocks with removed small polygons and small
 --holes. Aggregated polygons are simplified.
@@ -71,14 +71,14 @@ $$ LANGUAGE plpgsql STABLE
                     PARALLEL SAFE;
 
 
-DROP MATERIALIZED VIEW IF EXISTS osm_building_block_gen1;
+-- DROP MATERIALIZED VIEW IF EXISTS osm_building_block_gen1;
 
-CREATE MATERIALIZED VIEW osm_building_block_gen1 AS
-SELECT *
-FROM osm_building_block_gen1();
+-- CREATE MATERIALIZED VIEW osm_building_block_gen1 AS
+-- SELECT *
+-- FROM osm_building_block_gen1();
 
-CREATE INDEX ON osm_building_block_gen1 USING gist (geometry);
-CREATE UNIQUE INDEX ON osm_building_block_gen1 USING btree (osm_id);
+-- CREATE INDEX ON osm_building_block_gen1 USING gist (geometry);
+-- CREATE UNIQUE INDEX ON osm_building_block_gen1 USING btree (osm_id);
 
 
 -- Handle updates
@@ -111,15 +111,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_flag
-    AFTER INSERT OR UPDATE OR DELETE
-    ON osm_building_polygon
-    FOR EACH STATEMENT
-EXECUTE PROCEDURE buildings.flag();
+-- CREATE TRIGGER trigger_flag
+--     AFTER INSERT OR UPDATE OR DELETE
+--     ON osm_building_polygon
+--     FOR EACH STATEMENT
+-- EXECUTE PROCEDURE buildings.flag();
 
-CREATE CONSTRAINT TRIGGER trigger_refresh
-    AFTER INSERT
-    ON buildings.updates
-    INITIALLY DEFERRED
-    FOR EACH ROW
-EXECUTE PROCEDURE buildings.refresh();
+-- CREATE CONSTRAINT TRIGGER trigger_refresh
+--     AFTER INSERT
+--     ON buildings.updates
+--     INITIALLY DEFERRED
+--     FOR EACH ROW
+-- EXECUTE PROCEDURE buildings.refresh();

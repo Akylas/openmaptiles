@@ -9,7 +9,7 @@ CREATE OR REPLACE VIEW osm_all_buildings AS
 SELECT
     -- etldoc: osm_building_relation -> layer_building:z14_
     -- Buildings built from relations
-         SELECT member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
+          member AS osm_id,geometry,NULL::text AS name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
                   COALESCE(CleanNumeric(height), CleanNumeric(buildingheight)) as height,
                   COALESCE(CleanNumeric(min_height), CleanNumeric(buildingmin_height)) as min_height,
                   COALESCE(CleanNumeric(levels), CleanNumeric(buildinglevels)) as levels,
@@ -22,7 +22,7 @@ UNION ALL
 SELECT
     -- etldoc: osm_building_polygon -> layer_building:z14_
     -- Standalone buildings
-         SELECT obp.osm_id,obp.geometry,obp.name, obp.building::text as class,obp.amenity,obp.shop,obp.tourism,obp.leisure,obp.aerialway,
+          obp.osm_id,obp.geometry,obp.name, obp.building::text as class,obp.amenity,obp.shop,obp.tourism,obp.leisure,obp.aerialway,
                   COALESCE(CleanNumeric(obp.height), CleanNumeric(obp.buildingheight)) as height,
                   COALESCE(CleanNumeric(obp.min_height), CleanNumeric(obp.buildingmin_height)) as min_height,
                   COALESCE(CleanNumeric(obp.levels), CleanNumeric(obp.buildinglevels)) as levels,
@@ -37,21 +37,21 @@ WHERE ST_GeometryType(obp.geometry) IN ('ST_Polygon', 'ST_MultiPolygon')
     );
 
 CREATE OR REPLACE FUNCTION layer_building(bbox geometry, zoom_level int)
-RETURNS TABLE(geometry geometry, osm_id bigint, name text, class text, render_height int, render_min_height int, hide_3d boolean) AS $$
-    SELECT geometry, osm_id, case when 
+RETURNS TABLE(osm_id bigint, geometry geometry, name text, class text, render_height int, render_min_height int, hide_3d boolean) AS $$
+    SELECT osm_id, geometry, case when 
         (class in ('yes') and (nullif(amenity,'') is null and nullif(shop,'') is null and nullif(tourism,'') is null and nullif(leisure,'') is null and nullif(aerialway,'') is null)) then nullif(name,'') end as name, 
         nullif(class,'yes') as class, render_height, 
         nullif(render_min_height,0) as render_min_height,
        CASE WHEN hide_3d THEN TRUE END AS hide_3d
 FROM (
-         SELECT
-            osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
-            NULL::int AS render_height, NULL::int AS render_min_height,
-             FALSE      AS hide_3d
-         FROM osm_building_block_gen1
-         WHERE zoom_level = 13
-           AND geometry && bbox
-         UNION ALL
+        --  SELECT
+        --     osm_id, geometry, name, building::text AS class,amenity,shop,tourism,leisure,aerialway,
+        --     NULL::int AS render_height, NULL::int AS render_min_height,
+        --      FALSE      AS hide_3d
+        --  FROM osm_building_block_gen1
+        --  WHERE zoom_level = 13
+        --    AND geometry && bbox
+        --  UNION ALL
                                   -- etldoc: osm_building_polygon -> layer_building:z14_
         SELECT DISTINCT ON (osm_id)
            osm_id, geometry, name, class,amenity,shop,tourism,leisure,aerialway,
