@@ -1,29 +1,33 @@
 -- etldoc: layer_poi[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="layer_poi | <z12> z12 | <z13> z13 | <z14_> z14+" ] ;
 
-CREATE OR REPLACE FUNCTION layer_poi (bbox geometry, zoom_level integer, pixel_width numeric)
+DROP FUNCTION IF EXISTS layer_poi(geometry, integer, numeric) CASCADE;
+
+CREATE OR REPLACE FUNCTION layer_poi (
+    bbox geometry,
+    zoom_level integer,
+    pixel_width numeric
+)
     RETURNS TABLE (
-        osm_id bigint,
-        geometry geometry,
-        osmid bigint,
-        name text,
-        tags hstore,
-        class text,
-        subclass text,
-        historic text,
-        agg_stop integer,
-        layer integer,
-        level integer,
-        capacity integer,
-        indoor integer,
-        ele int,
-        "rank" int
-    )
-    AS $$
+            osm_id bigint,
+            geometry geometry,
+            name text,
+            tags hstore,
+            class text,
+            subclass text,
+            historic text,
+            agg_stop integer,
+            layer integer,
+            level integer,
+            capacity integer,
+            indoor integer,
+            ele int,
+            "rank" int
+        )
+        AS $$
     SELECT
         osm_id_hash AS osm_id,
         geometry,
-        osm_id_hash AS osmid,
         NULLIF (name, '') AS name,
         tags,
         poi_class (subclass, mapping_key) AS class,
@@ -114,7 +118,7 @@ CREATE OR REPLACE FUNCTION layer_poi (bbox geometry, zoom_level integer, pixel_w
             AND ((subclass = 'station'
                     AND mapping_key = 'railway')
                 OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut')
-                OR poi_class (subclass, mapping_key) IN ('spring')))
+                OR poi_class (subclass, mapping_key) IN ('spring'))
     UNION ALL
     -- etldoc: osm_poi_polygon ->  layer_poi:z14_
     SELECT

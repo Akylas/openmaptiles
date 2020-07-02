@@ -1,4 +1,6 @@
-CREATE OR REPLACE FUNCTION network_level (network text)
+CREATE OR REPLACE FUNCTION network_level (
+    network text
+)
     RETURNS integer
     AS $$
     SELECT
@@ -267,23 +269,27 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_
 -- etldoc: layer_route[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="<sql> layer_route |<z6> z6 |<z7> z7 |<z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
-DROP FUNCTION layer_route(geometry,integer);
-CREATE OR REPLACE FUNCTION layer_route (bbox geometry, zoom_level integer)
+DROP FUNCTION IF EXISTS layer_route(geometry, integer) CASCADE;
+
+CREATE OR REPLACE FUNCTION layer_route (
+    bbox geometry,
+    zoom_level integer
+)
     RETURNS TABLE (
-        osm_id bigint,
-        member_id bigint,
-        geometry geometry,
-        class text,
-        network integer,
-        name text,
-        ref text,
-        colour text,
-        ascent integer,
-        descent integer,
-        distance integer,
-        website text
-    )
-    AS $$
+            osm_id bigint,
+            member_id bigint,
+            geometry geometry,
+            class text,
+            network integer,
+            name text,
+            ref text,
+            colour text,
+            ascent integer,
+            descent integer,
+            distance integer,
+            website text
+        )
+        AS $$
     SELECT
         *
     FROM
