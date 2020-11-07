@@ -11,10 +11,6 @@ CREATE OR REPLACE FUNCTION poi_class_rank (
          40
       WHEN 'harbor' THEN
          75
-      WHEN 'college' THEN
-         80
-      WHEN 'school' THEN
-         85
       WHEN 'stadium' THEN
          90
       WHEN 'zoo' THEN
@@ -27,15 +23,19 @@ CREATE OR REPLACE FUNCTION poi_class_rank (
          113
       WHEN 'national_park' THEN
          114
-      WHEN 'cemetery' THEN
-         115
       WHEN 'park' THEN
-         120
+         115
+      WHEN 'college' THEN
+         116
+      WHEN 'school' THEN
+         117
       WHEN 'drinking_water' THEN
-         125
+         120
       WHEN 'watering_place' THEN
-         126
+         125
       WHEN 'bakery' THEN
+         126
+      WHEN 'cemetery' THEN
          127
       WHEN 'bus' THEN
          128
