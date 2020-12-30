@@ -193,7 +193,8 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z9 AS (
     FROM
         osm_route_network_merge_z10
     WHERE
-        ST_Length (geometry) > 250);
+        ST_Length (geometry) > 250 AND
+        network <= 4);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z9_geometry_idx ON osm_route_network_merge_z9 USING gist (geometry);
 
@@ -215,8 +216,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z8 AS (
     FROM
         osm_route_network_merge_z9
     WHERE
-        ST_Length (geometry) > 500
-        AND network <= 3);
+        ST_Length (geometry) > 500);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z8_geometry_idx ON osm_route_network_merge_z8 USING gist (geometry);
 
@@ -239,7 +239,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z7 AS (
         osm_route_network_merge_z8
     WHERE
         ST_Length (geometry) > 1000
-        AND network <= 2);
+        AND network <= 3);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z7_geometry_idx ON osm_route_network_merge_z7 USING gist (geometry);
 
@@ -261,10 +261,55 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z6 AS (
     FROM
         osm_route_network_merge_z7
     WHERE
+        ST_Length (geometry) > 2000);
+
+CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_network_merge_z6 USING gist (geometry);
+
+-- etldoc: osm_route_network_merge_z6 -> osm_route_network_merge_z5
+CREATE MATERIALIZED VIEW osm_route_network_merge_z5 AS (
+    SELECT
+        osm_id,
+        member_id,
+        ST_Simplify (geometry, 1600) AS geometry,
+        class,
+        network,
+        name,
+        ref,
+        colour,
+        ascent,
+        descent,
+        distance,
+        website
+    FROM
+        osm_route_network_merge_z6
+    WHERE
+        ST_Length (geometry) > 2000
+        AND network <= 2);
+
+CREATE INDEX IF NOT EXISTS osm_route_network_merge_z5_geometry_idx ON osm_route_network_merge_z5 USING gist (geometry);
+
+-- etldoc: osm_route_network_merge_z5 -> osm_route_network_merge_z4
+CREATE MATERIALIZED VIEW osm_route_network_merge_z4 AS (
+    SELECT
+        osm_id,
+        member_id,
+        ST_Simplify (geometry, 1600) AS geometry,
+        class,
+        network,
+        name,
+        ref,
+        colour,
+        ascent,
+        descent,
+        distance,
+        website
+    FROM
+        osm_route_network_merge_z5
+    WHERE
         ST_Length (geometry) > 2000
         AND network <= 1);
 
-CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_network_merge_z6 USING gist (geometry);
+CREATE INDEX IF NOT EXISTS osm_route_network_merge_z4_geometry_idx ON osm_route_network_merge_z4 USING gist (geometry);
 
 -- etldoc: layer_route[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="<sql> layer_route |<z6> z6 |<z7> z7 |<z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
@@ -290,6 +335,22 @@ CREATE OR REPLACE FUNCTION layer_route (
             website text
         )
         AS $$
+    SELECT
+        *
+    FROM
+        osm_route_network_merge_z4
+    WHERE
+        zoom_level = 4
+        AND geometry && bbox
+    UNION ALL
+    SELECT
+        *
+    FROM
+        osm_route_network_merge_z5
+    WHERE
+        zoom_level = 5
+        AND geometry && bbox
+    UNION ALL
     SELECT
         *
     FROM
