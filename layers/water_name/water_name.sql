@@ -8,28 +8,28 @@ CREATE OR REPLACE FUNCTION layer_water_name (
     pixel_height real
 )
     RETURNS TABLE (
-            osm_id bigint,
-            geometry geometry,
-            name text,
-            tags hstore,
-            class text,
-            intermittent int,
-            ele int,
-            way_pixels bigint
-        )
+                osm_id       bigint,
+                geometry     geometry,
+                name         text,
+                tags         hstore,
+                class        text,
+                intermittent int,
+                ele int,
+                way_pixels bigint
+            )
         AS $$
-    SELECT
-        -- etldoc: osm_water_lakeline ->  layer_water_name:z9_13
-        -- etldoc: osm_water_lakeline ->  layer_water_name:z14_
+SELECT
+    -- etldoc: osm_water_lakeline ->  layer_water_name:z9_13
+    -- etldoc: osm_water_lakeline ->  layer_water_name:z14_
         CASE WHEN osm_id < 0 THEN
             - osm_id * 10 + 4
         ELSE
             osm_id * 10 + 1
         END AS osm_id_hash,
-        geometry,
-        name,
-        tags,
-        'lake'::text AS class,
+    geometry,
+    name,
+    tags,
+    'lake'::text AS class,
         NULLIF (is_intermittent, FALSE)::int AS intermittent,
         substring(ele FROM E'^(-?\\d+)(\\D|$)')::int AS ele,
         (area / NULLIF (zoom_level::real * pixel_width::real * pixel_height::real, 0))::bigint AS way_pixels
@@ -40,19 +40,19 @@ CREATE OR REPLACE FUNCTION layer_water_name (
         AND ((zoom_level BETWEEN 8 AND 11
                 AND LineLabel (zoom_level, NULLIF (name, ''), geometry))
             OR (zoom_level >= 12))
-    UNION ALL
-    SELECT
-        -- etldoc: osm_water_point ->  layer_water_name:z9_13
-        -- etldoc: osm_water_point ->  layer_water_name:z14_
+UNION ALL
+SELECT
+    -- etldoc: osm_water_point ->  layer_water_name:z9_13
+    -- etldoc: osm_water_point ->  layer_water_name:z14_
         CASE WHEN osm_id < 0 THEN
             - osm_id * 10 + 4
         ELSE
             osm_id * 10 + 1
         END AS osm_id_hash,
-        geometry,
-        name,
-        tags,
-        'lake'::text AS class,
+    geometry,
+    name,
+    tags,
+    'lake'::text AS class,
         NULLIF (is_intermittent, FALSE)::int AS intermittent,
         substring(ele FROM E'^(-?\\d+)(\\D|$)')::int AS ele,
         (area / NULLIF (zoom_level::real * pixel_width::real * pixel_height::real, 0))::bigint AS way_pixels
@@ -65,16 +65,16 @@ CREATE OR REPLACE FUNCTION layer_water_name (
             OR (zoom_level BETWEEN 11 AND 12
                 AND area > 500 * 2 ^ (20 - zoom_level))
             OR (zoom_level >= 13))
-    UNION ALL
-    SELECT
-        -- etldoc: osm_marine_point ->  layer_water_name:z0_8
-        -- etldoc: osm_marine_point ->  layer_water_name:z9_13
-        -- etldoc: osm_marine_point ->  layer_water_name:z14_
-        osm_id * 10 AS osm_id_hash,
-        geometry,
-        name,
-        tags,
-        place::text AS class,
+UNION ALL
+SELECT
+    -- etldoc: osm_marine_point ->  layer_water_name:z0_8
+    -- etldoc: osm_marine_point ->  layer_water_name:z9_13
+    -- etldoc: osm_marine_point ->  layer_water_name:z14_
+    osm_id * 10 AS osm_id_hash,
+    geometry,
+    name,
+    tags,
+    place::text AS class,
         NULLIF (is_intermittent, FALSE)::int AS intermittent,
         NULL::int AS ele,
         NULL::bigint AS way_pixels
@@ -90,6 +90,6 @@ CREATE OR REPLACE FUNCTION layer_water_name (
 $$
 LANGUAGE SQL
 STABLE
--- STRICT
-PARALLEL SAFE;
+                -- STRICT
+                PARALLEL SAFE;
 

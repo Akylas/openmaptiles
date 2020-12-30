@@ -25,9 +25,9 @@ SELECT
     CASE
         %%FIELD_MAPPING: class %%
         ELSE 'other'
-        END                                                              AS class,
-    NULLIF(iata, '')                                                     AS iata,
-    NULLIF(icao, '')                                                     AS icao,
+        END AS class,
+    NULLIF(iata, '') AS iata,
+    NULLIF(icao, '') AS icao,
     substring(ele FROM E'^(-?\\d+)(\\D|$)')::int                         AS ele
 FROM osm_aerodrome_label_point
 WHERE geometry && bbox

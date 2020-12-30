@@ -4,10 +4,10 @@ DROP TRIGGER IF EXISTS trigger_insert_line ON osm_water_polygon;
 
 CREATE OR REPLACE VIEW osm_water_lakeline_view AS
 SELECT wp.osm_id,
-       ll.wkb_geometry                    AS geometry,
-		name,
+       ll.wkb_geometry AS geometry,
+       name,
        update_tags(tags, ll.wkb_geometry) AS tags,
-       ST_Area(wp.geometry)               AS area,
+       ST_Area(wp.geometry) AS area,
 		is_intermittent,
     ele
 FROM osm_water_polygon AS wp
@@ -51,7 +51,7 @@ CREATE OR REPLACE FUNCTION water_lakeline.update() RETURNS trigger AS
 $$
 BEGIN
     UPDATE osm_water_lakeline
-    SET (osm_id, geometry, name, name_en, name_de, tags, area, is_intermittent) =
+    SET (osm_id, geometry, name, tags, area, is_intermittent) =
             (SELECT * FROM osm_water_lakeline_view WHERE osm_water_lakeline_view.osm_id = NEW.osm_id)
     WHERE osm_water_lakeline.osm_id = NEW.osm_id;
 
@@ -65,7 +65,10 @@ BEGIN
     INSERT INTO osm_water_lakeline
     SELECT *
     FROM osm_water_lakeline_view
-    WHERE osm_water_lakeline_view.osm_id = NEW.osm_id;
+    WHERE osm_water_lakeline_view.osm_id = NEW.osm_id
+    -- May happen in case we replay update
+    ON CONFLICT ON CONSTRAINT osm_water_lakeline_pk
+    DO NOTHING;
 
     RETURN NULL;
 END;

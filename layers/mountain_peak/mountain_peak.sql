@@ -3,43 +3,43 @@
 
 CREATE OR REPLACE FUNCTION layer_mountain_peak (bbox geometry, zoom_level integer, pixel_width numeric)
     RETURNS TABLE (
-        osm_id bigint,
-        geometry geometry,
+                osm_id   bigint,
+                geometry geometry,
         osmid bigint,
-        name text,
+                name     text,
         wikidata text,
         wikipedia text,
-        class text,
-        tags hstore,
-        ele int,
+                class    text,
+                tags     hstore,
+                ele      int,
         summitcross integer,
-        "rank" int
-    )
+                "rank"   int
+            )
     AS $$
-    SELECT
-        -- etldoc: osm_peak_point -> layer_mountain_peak:z7_
-        osm_id,
-        geometry,
+SELECT
+    -- etldoc: osm_peak_point -> layer_mountain_peak:z7_
+    osm_id,
+    geometry,
         osm_id AS osmid,
         NULLIF (name, '') AS name,
         NULLIF (wikidata, '') AS wikidata,
         NULLIF (wikipedia, '') AS wikipedia,
-        tags -> 'natural' AS class,
-        tags,
-        ele::int,
+    tags->'natural' AS class,
+    tags,
+    ele::int,
         CASE WHEN summitcross = TRUE THEN
             1
         END AS summitcross,
-        rank::int
-    FROM (
+    rank::int
+FROM (
         SELECT
             osm_id,
-            geometry,
-            name,
+                geometry,
+                name,
             wikidata,
             wikipedia,
-            tags,
-            substring(ele FROM E'^(-?\\d+)(\\D|$)')::int AS ele,
+                tags,
+                substring(ele FROM E'^(-?\\d+)(\\D|$)')::int AS ele,
             summitcross,
             row_number() OVER (PARTITION BY LabelGrid (geometry, 100 * pixel_width) ORDER BY (( CASE WHEN ele IS NOT NULL
                     AND ele ~ E'^-?\\d{1,4}(\\D|$)' THEN

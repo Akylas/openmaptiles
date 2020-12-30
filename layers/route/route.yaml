@@ -39,7 +39,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id as osmid, member_id, geometry, class, network, name, ref, colour, ascent, descent, distance, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT osm_id, member_id, geometry, class, network, name, ref, colour, ascent, descent, distance, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:

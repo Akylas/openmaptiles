@@ -33,9 +33,10 @@ layer:
         - bridge
         - tunnel
     ele: Elevation (`ele`) in meters.
+    way_pixels: aera size in pixels
   buffer_size: 4
   datasource:
-    query: (SELECT geometry, class, intermittent, brunnel, ele FROM layer_water(!bbox!, z(!scale_denominator!), !pixel_width!::real, !pixel_height!::real)) AS t
+    query: (SELECT geometry, class, intermittent, brunnel, ele, way_pixels FROM layer_water(!bbox!, z(!scale_denominator!), !pixel_width!::real, !pixel_height!::real)) AS t
 schema:
   - ./update_water.sql
   - ./water.sql

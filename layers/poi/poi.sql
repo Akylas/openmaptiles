@@ -9,28 +9,28 @@ CREATE OR REPLACE FUNCTION layer_poi (
     pixel_width numeric
 )
     RETURNS TABLE (
-            osm_id bigint,
-            geometry geometry,
-            name text,
-            tags hstore,
-            class text,
-            subclass text,
+                osm_id   bigint,
+                geometry geometry,
+                name     text,
+                tags     hstore,
+                class    text,
+                subclass text,
             historic text,
-            agg_stop integer,
-            layer integer,
-            level integer,
+                agg_stop integer,
+                layer    integer,
+                level    integer,
             capacity integer,
-            indoor integer,
+                indoor   integer,
             ele int,
-            "rank" int
-        )
+                "rank"   int
+            )
         AS $$
     SELECT
         osm_id_hash AS osm_id,
-        geometry,
-        NULLIF (name, '') AS name,
-        tags,
-        poi_class (subclass, mapping_key) AS class,
+       geometry,
+       NULLIF(name, '') AS name,
+       tags,
+       poi_class(subclass, mapping_key) AS class,
         CASE WHEN subclass = 'information' THEN
             NULLIF (information, '')
         WHEN subclass = 'place_of_worship' THEN
@@ -41,11 +41,11 @@ CREATE OR REPLACE FUNCTION layer_poi (
             NULL
         ELSE
             subclass
-        END AS subclass,
+           END AS subclass,
         NULL::text AS historic,
-        agg_stop,
-        NULLIF (layer, 0) AS layer,
-        "level",
+       agg_stop,
+       NULLIF(layer, 0) AS layer,
+       "level",
         capacity,
         CASE WHEN indoor = TRUE THEN
             1
@@ -56,7 +56,7 @@ CREATE OR REPLACE FUNCTION layer_poi (
             ELSE
                 poi_class_rank (poi_class (subclass, mapping_key))
             END ASC)::int AS "rank"
-    FROM (
+FROM (
         -- etldoc: osm_poi_point ->  layer_poi:z11
         -- etldoc: osm_poi_point ->  layer_poi:z12
         SELECT
@@ -70,65 +70,65 @@ CREATE OR REPLACE FUNCTION layer_poi (
             AND (subclass IN ('alpine_hut', 'wilderness_hut')
                 OR poi_class (subclass, mapping_key) IN ('spring'))
         UNION ALL
-        -- etldoc: osm_poi_point ->  layer_poi:z12
-        -- etldoc: osm_poi_point ->  layer_poi:z13
+         -- etldoc: osm_poi_point ->  layer_poi:z12
+         -- etldoc: osm_poi_point ->  layer_poi:z13
         SELECT
             *,
-            osm_id * 10 AS osm_id_hash
+                osm_id * 10 AS osm_id_hash
         FROM
             osm_poi_point
         WHERE
             geometry && bbox
-            AND zoom_level BETWEEN 12 AND 13
+           AND zoom_level BETWEEN 12 AND 13
             AND ((subclass = 'station'
                     AND mapping_key = 'railway')
                 OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut')
                 OR poi_class (subclass, mapping_key) IN ('spring'))
-        UNION ALL
-        -- etldoc: osm_poi_point ->  layer_poi:z14_
+         UNION ALL
+         -- etldoc: osm_poi_point ->  layer_poi:z14_
         SELECT
             *,
-            osm_id * 10 AS osm_id_hash
+                osm_id * 10 AS osm_id_hash
         FROM
             osm_poi_point
         WHERE
             geometry && bbox
-            AND zoom_level >= 14
+           AND zoom_level >= 14
             AND (subclass != 'information'
                 OR (information != 'board'
                     AND NULLIF (name, '') IS NOT NULL))
             AND (subclass != 'viewpoint'
                 OR (NULLIF (name, '') IS NOT NULL))
-        UNION ALL
-        -- etldoc: osm_poi_polygon ->  layer_poi:z12
-        -- etldoc: osm_poi_polygon ->  layer_poi:z13
+         UNION ALL
+         -- etldoc: osm_poi_polygon ->  layer_poi:z12
+         -- etldoc: osm_poi_polygon ->  layer_poi:z13
         SELECT
             *,
-            NULL::integer AS agg_stop,
+                NULL::integer AS agg_stop,
             CASE WHEN osm_id < 0 THEN
                 - osm_id * 10 + 4
             ELSE
                 osm_id * 10 + 1
-            END AS osm_id_hash
+                    END AS osm_id_hash
         FROM
             osm_poi_polygon
         WHERE
             geometry && bbox
-            AND zoom_level BETWEEN 12 AND 13
+           AND zoom_level BETWEEN 12 AND 13
             AND ((subclass = 'station'
                     AND mapping_key = 'railway')
                 OR subclass IN ('halt', 'ferry_terminal', 'alpine_hut', 'wilderness_hut')
                 OR poi_class (subclass, mapping_key) IN ('spring'))
-    UNION ALL
-    -- etldoc: osm_poi_polygon ->  layer_poi:z14_
+         UNION ALL
+         -- etldoc: osm_poi_polygon ->  layer_poi:z14_
     SELECT
         *,
-        NULL::integer AS agg_stop,
+                NULL::integer AS agg_stop,
         CASE WHEN osm_id < 0 THEN
             - osm_id * 10 + 4
         ELSE
             osm_id * 10 + 1
-        END AS osm_id_hash
+                    END AS osm_id_hash
     FROM
         osm_poi_polygon
     WHERE

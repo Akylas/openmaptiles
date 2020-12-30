@@ -34,8 +34,12 @@ services:
       # Must match the version of this file (first line)
       # download-osm will use it when generating a composer file
       MAKE_DC_VERSION: "2.3"
-      # Allow DIFF_MODE to be overwritten from shell
+      # Allow DIFF_MODE, MIN_ZOOM, and MAX_ZOOM to be overwritten from shell
       DIFF_MODE: ${DIFF_MODE}
+      MIN_ZOOM: ${MIN_ZOOM}
+      MAX_ZOOM: ${MAX_ZOOM}
+      #Provide BBOX from *.bbox file if exists, else from .env
+      BBOX: ${BBOX}
       # Imposm configuration file describes how to load updates when enabled
       IMPOSM_CONFIG_FILE: ${IMPOSM_CONFIG_FILE}
       # Which files to use during import-borders processing
@@ -65,6 +69,8 @@ services:
     environment:
       FILTER_MAPNIK_OUTPUT: ${FILTER_MAPNIK_OUTPUT}
       MBTILES_NAME: ${MBTILES_FILE}
+      # Control tilelive-copy threads
+      COPY_CONCURRENCY: ${COPY_CONCURRENCY}
 
   generate-vectortiles:
     image: "openmaptiles/generate-vectortiles:${TOOLS_VERSION}"
@@ -80,11 +86,16 @@ services:
       BBOX: ${BBOX}
       MIN_ZOOM: ${MIN_ZOOM}
       MAX_ZOOM: ${MAX_ZOOM}
+      # Control tilelive-copy threads
+      COPY_CONCURRENCY: ${COPY_CONCURRENCY}
+      #
 
   postserve:
     image: "openmaptiles/openmaptiles-tools:${TOOLS_VERSION}"
-    command: "postserve openmaptiles.yaml --verbose --port ${PPORT:-8090}"
+    command: "postserve ${TILESET_FILE} --verbose --serve=${OMT_HOST:-http://localhost}:${PPORT:-8090}"
     env_file: .env
+    environment:
+      TILESET_FILE: ${TILESET_FILE}
     networks:
       - postgres_conn
     ports:

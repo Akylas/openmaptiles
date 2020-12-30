@@ -68,7 +68,13 @@ layer:
       - bridleway
       - corridor
       - platform
-      - chair_lift
+    brunnel:
+      description: |
+          Mark whether way is a bridge, a tunnel or a ford.
+      values:
+      - bridge
+      - tunnel
+      - ford
     level:
       description: |
           Experimental feature! Filled only for steps and footways. Original
@@ -86,12 +92,12 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, name, ref, ref_length, network::text, class::text, subclass, layer, level, indoor FROM layer_transportation_name(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, name, ref, ref_length, network::text, class::text, subclass, brunnel, layer, level, indoor FROM layer_transportation_name(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./network_type.sql
   - ./update_route_member.sql
   - ./update_transportation_name.sql
-  - ./layer.sql
+  - ./transportation_name.sql
 datasources:
   - type: imposm3
     mapping_file: ../transportation/mapping.yaml

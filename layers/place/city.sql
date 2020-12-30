@@ -9,7 +9,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, place ci
                 tags,
                 place,
                 "rank",
-                normalize_capital_level(capital)             AS capital
+                normalize_capital_level(capital) AS capital
          FROM osm_city_point
          WHERE geometry && bbox
            AND ((zoom_level = 2 AND "rank" = 1)
@@ -20,7 +20,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, place ci
                 tags,
                 place,
                 COALESCE("rank", gridrank + 10),
-                normalize_capital_level(capital)             AS capital
+                normalize_capital_level(capital) AS capital
          FROM (
       SELECT osm_id, geometry, name,
                          tags,
@@ -33,7 +33,7 @@ RETURNS TABLE(osm_id bigint, geometry geometry, name text, tags hstore, place ci
                                  place ASC NULLS LAST,
                                  population DESC NULLS LAST,
                                  length(name) ASC
-                             )::int                                   AS gridrank
+                             )::int AS gridrank
                   FROM osm_city_point
                   WHERE geometry && bbox
                     AND ((zoom_level = 7 AND place <= 'town'::city_place
