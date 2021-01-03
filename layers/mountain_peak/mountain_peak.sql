@@ -48,7 +48,7 @@ FROM (
                     0
                 END) + ( CASE WHEN ele IS NOT NULL
                 AND NULLIF (wikipedia, '') IS NOT NULL THEN
-                5000
+                100
             ELSE
                 0
             END) + ( CASE WHEN ele IS NOT NULL
