@@ -4,8 +4,8 @@
 CREATE OR REPLACE FUNCTION layer_water_name (
     bbox geometry,
     zoom_level integer,
-    pixel_width real,
-    pixel_height real
+    pixel_width numeric,
+    pixel_height numeric
 )
     RETURNS TABLE (
                 osm_id       bigint,

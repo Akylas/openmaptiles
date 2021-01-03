@@ -24,7 +24,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, geometry, name, class, intermittent, ele, way_pixels FROM layer_water_name(!bbox!, z(!scale_denominator!), !pixel_width!::real, !pixel_height!::real)) AS t
+    query: (SELECT osm_id, geometry, name, class, intermittent, ele, way_pixels FROM layer_water_name(!bbox!, z(!scale_denominator!), !pixel_width!, !pixel_height!)) AS t
 schema:
   - ./update_marine_point.sql
   - ./update_water_lakeline.sql
