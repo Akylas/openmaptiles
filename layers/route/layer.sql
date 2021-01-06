@@ -114,7 +114,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z12 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 30) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -136,7 +136,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z11 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 60) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -158,7 +158,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z10 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 110) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -180,7 +180,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z9 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 200) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -203,7 +203,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z8 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 400) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -225,7 +225,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z7 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 800) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -248,7 +248,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z6 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -270,7 +270,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z5 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        geometry,
         class,
         network,
         name,
@@ -293,7 +293,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z4 AS (
     SELECT
         osm_id,
         member_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        geometry,
         class,
         network,
         name,

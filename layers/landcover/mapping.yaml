@@ -48,6 +48,7 @@ tables:
       - sand
       - dune
       - rock
+      - cliff
       leisure:
       - park
       - garden

@@ -356,10 +356,10 @@ SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_110m_admin_0_boundary_lines_land_gen_z0
     );
 
@@ -372,20 +372,20 @@ SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_50m_admin_0_boundary_lines_land_gen_z1
 UNION ALL
 SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_10m_admin_1_states_provinces_lines_gen_z1
 UNION ALL
 SELECT geometry,
@@ -395,7 +395,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z1
     );
 
@@ -409,20 +409,20 @@ SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_50m_admin_0_boundary_lines_land_gen_z2
 UNION ALL
 SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_10m_admin_1_states_provinces_lines_gen_z2
 UNION ALL
 SELECT geometry,
@@ -432,7 +432,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z2
     );
 
@@ -445,20 +445,20 @@ SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_50m_admin_0_boundary_lines_land_gen_z3
 UNION ALL
 SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_10m_admin_1_states_provinces_lines_gen_z3
 UNION ALL
 SELECT geometry,
@@ -468,7 +468,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z3
     );
 
@@ -482,30 +482,30 @@ SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_10m_admin_0_boundary_lines_land_gen_z4
 UNION ALL
 SELECT geometry,
        admin_level,
        NULL::text AS adm0_l,
        NULL::text AS adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM ne_10m_admin_1_states_provinces_lines_gen_z4
 UNION ALL
 SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z4
 WHERE maritime = TRUE
   AND admin_level <= 2
@@ -517,7 +517,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z4
     );
 
@@ -529,10 +529,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z5
 WHERE admin_level <= 4
 -- already not included in osm_border_linestring_adm
@@ -545,7 +545,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z5
     );
 
@@ -557,10 +557,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z6
 WHERE admin_level <= 4
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z6)
@@ -572,7 +572,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z6
     );
 
@@ -584,10 +584,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z7
 WHERE admin_level <= 6
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z7)
@@ -599,7 +599,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z7
     );
 
@@ -611,10 +611,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z8
 WHERE admin_level <= 6
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z8)
@@ -626,7 +626,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z8
     );
 
@@ -638,10 +638,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z9
 WHERE admin_level <= 6
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z9)
@@ -653,7 +653,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z9
     );
 
@@ -665,10 +665,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z10
 WHERE admin_level <= 6
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z10)
@@ -680,7 +680,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z10
     );
 
@@ -692,10 +692,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z11
 WHERE admin_level <= 8
 --  AND osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z11)
@@ -707,7 +707,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z11
     );
 
@@ -719,10 +719,10 @@ SELECT geometry,
        admin_level,
        adm0_l,
        adm0_r,
-       disputed,
+       NULLIF(disputed,false)::boolean AS disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z12
 --WHERE osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z12)
 UNION ALL
@@ -733,7 +733,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z12
     );
 
@@ -748,7 +748,7 @@ SELECT geometry,
        disputed,
        NULL::text AS disputed_name,
        NULL::text AS claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_linestring_gen_z13
 --WHERE osm_id NOT IN (SELECT DISTINCT osm_id FROM osm_border_disp_linestring_gen_z13)
 UNION ALL
@@ -759,7 +759,7 @@ SELECT geometry,
        TRUE AS disputed,
        edit_name(name) AS disputed_name,
        claimed_by,
-       maritime
+       NULLIF(maritime,false)::boolean AS maritime
 FROM osm_border_disp_linestring_gen_z13
     );
 

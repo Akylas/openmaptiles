@@ -141,8 +141,9 @@ layer:
       values:
       - 1
     ele: Elevation in meters
-    osmid: osm_id
     historic: historic description
+    capacity: capacity
+    tags: tags
     osm_id: osm_id
   datasource:
     geometry_field: geometry

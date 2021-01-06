@@ -413,6 +413,15 @@ FROM (
          FROM osm_landcover_polygon
          WHERE zoom_level >= 14
            AND geometry && bbox
+         UNION ALL
+         -- etldoc:  landcover_linestring -> layer_landcover:z12_
+         SELECT geometry, subclass, name FROM landcover_linestring 
+         WHERE  zoom_level >= 12
+            AND (subclass in ('cliff'))
+         UNION ALL
+         -- etldoc:  landcover_linestring -> layer_landcover:z14_
+         SELECT geometry, subclass, name FROM landcover_linestring 
+         WHERE zoom_level >= 14 
      ) AS zoom_levels;
 $$ LANGUAGE SQL STABLE
                 -- STRICT
