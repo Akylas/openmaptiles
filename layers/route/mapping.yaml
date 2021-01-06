@@ -10,6 +10,10 @@ foot_field: &ref
   key: ref
   name: ref
   type: string
+colour_field: &colour
+  key: colour
+  name: colour
+  type: string
 
 tables:
   # etldoc: imposm3 -> route_linestring
@@ -44,11 +48,14 @@ tables:
     - name: website
       key: website
       type: string
-    - name: colour
-      key: colour
+    - *colour
+    - name: symbol
+      key: osmc:symbol
       type: string
     relation_types: [route]
     mapping:
       route:
       - bicycle
       - hiking
+      - horse
+      - foot

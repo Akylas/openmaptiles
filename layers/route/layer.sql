@@ -19,7 +19,7 @@ CREATE TEMP TABLE osm_route_max_network AS SELECT DISTINCT ON (member_id, route)
     network_level (network) AS network,
     name,
     ref,
-    colour,
+    nullif (colour, SPLIT_PART(symbol, ':', 1)) AS colour,
     ascent,
     descent,
     distance,
@@ -41,38 +41,21 @@ CREATE TEMP TABLE osm_route_network AS
 SELECT
     osm_id,
     member_id,
-    geometry,
-    'bicycle' AS class,
-    network,
-    nullif (name, '') AS name,
-    nullif (ref, '') AS ref,
-    nullif (colour, '') AS colour,
-    ascent::int,
-    descent::int,
-    distance::int,
-    nullif (website, '') AS website
+    coalesce(bicycle.geometry, hiking.geometry) AS geometry,
+    coalesce(bicycle.route, hiking.route) AS class,
+    coalesce(bicycle.network, hiking.network) AS network,
+    nullif (coalesce(bicycle.name, hiking.name), '') AS name,
+    nullif (coalesce(bicycle.ref, hiking.ref), '') AS ref,
+    nullif (coalesce(bicycle.colour, hiking.colour), '') AS colour,
+    coalesce(bicycle.ascent, hiking.ascent) AS ascent::int,
+    coalesce(bicycle.descent, hiking.descent) AS descent::int,
+    coalesce(bicycle.distance, hiking.distance) AS distance::int,
+    nullif (coalesce(bicycle.website, hiking.website), '') AS website
 FROM
-    osm_route_max_network
-WHERE
-    route = 'bicycle'
-UNION ALL
-SELECT
-    osm_id,
-    member_id,
-    geometry,
-    'hiking' AS class,
-    network,
-    nullif (name, '') AS name,
-    nullif (ref, '') AS ref,
-    nullif (colour, '') AS colour,
-    ascent::int,
-    descent::int,
-    distance::int,
-    nullif (website, '') AS website
-FROM
-    osm_route_max_network
-WHERE
-    route = 'hiking';
+    (SELECT * FROM osm_route_max_network WHERE route = 'bicycle') AS bicycle
+    FULL OUTER JOIN (SELECT * FROM osm_route_max_network WHERE route IN ('hiking', 'foot', 'horse')) AS hiking ON
+        bicycle.member_id = hiking.member_id
+;
 
 -- etldoc: osm_route_network -> osm_route_network_merge
 DROP TABLE IF EXISTS osm_route_network_merge CASCADE;
@@ -114,7 +97,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z12 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 30) AS geometry,
         class,
         network,
         name,
@@ -136,7 +119,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z11 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 60) AS geometry,
         class,
         network,
         name,
@@ -158,7 +141,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z10 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 110) AS geometry,
         class,
         network,
         name,
@@ -180,7 +163,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z9 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 200) AS geometry,
         class,
         network,
         name,
@@ -203,7 +186,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z8 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 400) AS geometry,
         class,
         network,
         name,
@@ -225,7 +208,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z7 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 800) AS geometry,
         class,
         network,
         name,
@@ -248,7 +231,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z6 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 1600) AS geometry,
         class,
         network,
         name,
@@ -270,7 +253,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z5 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 1600) AS geometry,
         class,
         network,
         name,
@@ -293,7 +276,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z4 AS (
     SELECT
         osm_id,
         member_id,
-        geometry,
+        ST_Simplify (geometry, 1600) AS geometry,
         class,
         network,
         name,
