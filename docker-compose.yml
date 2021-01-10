@@ -28,7 +28,7 @@ services:
       - postgres_conn
 
   openmaptiles-tools:
-    image: "openmaptiles/openmaptiles-tools:${TOOLS_VERSION}"
+    image: "akylas/openmaptiles-tools"
     env_file: .env
     environment:
       # Must match the version of this file (first line)
