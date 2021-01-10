@@ -6,7 +6,8 @@ layer:
   srs: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over
   fields:
     osm_id: osm_id
-    member_id: member_id
+    osmid: osm_id
+    symbol: symbol
     class:
       description: |
           correspond to [route](https://wiki.openstreetmap.org/wiki/Key:route?uselang=en-US) key
@@ -39,7 +40,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, member_id, geometry, class, network, name, ref, colour, ascent, descent, distance, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT osm_id, osm_id AS osmid, geometry, class, network, name, ref, symbol, colour, ascent, descent, distance, description, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:

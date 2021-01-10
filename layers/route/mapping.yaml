@@ -23,7 +23,11 @@ tables:
     - name: osm_id
       type: id
     - name: member_id
-      type: member_id
+      key: osm_id
+      type: id
+      from_member: true
+    - name: relation_id
+      type: id
     - name: role
       type: member_role
     - name: type
@@ -32,7 +36,7 @@ tables:
       key: route
       type: string
     - name: geometry
-      type: validated_geometry
+      type: geometry
     - *ref
     - *network
     - *name
@@ -48,14 +52,16 @@ tables:
     - name: website
       key: website
       type: string
+    - name: description
+      key: description
+      type: string
     - *colour
     - name: symbol
       key: osmc:symbol
       type: string
-    relation_types: [route]
+    relation_types: [route, superroute]
     mapping:
       route:
       - bicycle
       - hiking
-      - horse
       - foot
