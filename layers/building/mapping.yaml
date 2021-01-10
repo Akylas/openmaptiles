@@ -24,7 +24,7 @@ tables:
     - name: material
       key: building:material
       type: string
-    - name: colour
+    - name: color
       key: building:colour
       type: string
     - name: building
@@ -119,7 +119,7 @@ tables:
     - name: material
       key: building:material
       type: string
-    - name: colour
+    - name: color
       key: building:colour
       type: string
     - name: buildingpart
