@@ -143,7 +143,6 @@ layer:
     ele: Elevation in meters
     historic: historic description
     capacity: capacity
-    tags: tags
     osm_id: osm_id
   datasource:
     geometry_field: geometry
