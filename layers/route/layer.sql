@@ -4,113 +4,127 @@ CREATE OR REPLACE FUNCTION network_level (
     RETURNS integer
     AS $$
     SELECT
-        coalesce(array_position(ARRAY['icn', 'ncn', 'rcn', 'lcn'], network::text), array_position(ARRAY['iwn', 'nwn', 'rwn', 'lwn'], network::text));
+        nullif(coalesce(array_position(ARRAY['icn', 'ncn', 'rcn', 'lcn'], network::text), array_position(ARRAY['iwn', 'nwn', 'rwn', 'lwn'], network::text)), -1);
+
+$$
+LANGUAGE SQL
+IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION route_ref (
+    ref text,
+    name text
+)
+    RETURNS text
+    AS $$
+    SELECT
+        nullif(coalesce(nullif(ref, ''), regexp_replace(name, '[^A-Z0-9]', '', 'g')), '');
 
 $$
 LANGUAGE SQL
 IMMUTABLE STRICT;
 
 -- etldoc: osm_route_linestring -> osm_route_max_network
-CREATE TEMP TABLE osm_route_max_network AS SELECT DISTINCT ON (member_id, route)
-    osm_id,
-    relation_id,
-    member_id,
-    geometry,
-    route,
-    network_level (network) AS network,
-    name,
-    ref,
-    symbol,
-    nullif (coalesce(nullif(colour, ''), SPLIT_PART(symbol, ':', 1)), '') AS colour,
-    ascent,
-    descent,
-    distance,
-    description,
-    website
-FROM
-    osm_route_linestring
-ORDER BY
-    member_id,
-    route,
-    network_level (network);
+-- CREATE TEMP TABLE osm_route_max_network AS SELECT DISTINCT ON (member_id, route)
+--     osm_id,
+--     relation_id,
+--     member_id,
+--     geometry,
+--     route as class,
+--     network_level (network) AS network,
+--     nullif (name, '') as name,
+--     route_ref (ref, name) AS ref,
+--     nullif (symbol, '') as symbol,
+--     nullif (coalesce(nullif(color, ''), SPLIT_PART(symbol, ':', 1)), '') AS color,
+--     ascent,
+--     descent,
+--     distance,
+--     nullif (description, '') as description,
+--     nullif (website, '') as website
+-- FROM
+--     osm_route_linestring
+-- ORDER BY
+--     member_id,
+--     route,
+--     network_level (network);
 
 -- etldoc: osm_route_max_network -> osm_route_network
-CREATE TEMP TABLE osm_route_network AS
-SELECT
-    coalesce(bicycle.osm_id, hiking.osm_id) AS osm_id,
-    coalesce(bicycle.relation_id, hiking.relation_id) AS relation_id,
-    coalesce(bicycle.member_id, hiking.member_id) AS member_id,
-    coalesce(bicycle.geometry, hiking.geometry) AS geometry,
-    coalesce(bicycle.route, hiking.route) AS class,
-    coalesce(bicycle.network, hiking.network) AS network,
-    nullif (coalesce(bicycle.name, hiking.name), '') AS name,
-    nullif (coalesce(bicycle.symbol, hiking.symbol), '') AS symbol,
-    nullif (coalesce(bicycle.ref, hiking.ref), '') AS ref,
-    nullif (coalesce(bicycle.colour, hiking.colour), '') AS colour,
-    coalesce(bicycle.ascent, hiking.ascent)::int AS ascent,
-    coalesce(bicycle.descent, hiking.descent)::int AS descent,
-    coalesce(bicycle.distance, hiking.distance)::int AS distance,
-    nullif (coalesce(bicycle.description, hiking.description), '') AS description,
-    nullif (coalesce(bicycle.website, hiking.website), '') AS website
-FROM
-    (SELECT * FROM osm_route_max_network WHERE route = 'bicycle') AS bicycle
-    FULL OUTER JOIN (SELECT * FROM osm_route_max_network WHERE route IN ('hiking', 'foot')) AS hiking ON
-        bicycle.member_id = hiking.member_id
-;
+-- CREATE TEMP TABLE osm_route_network AS
+-- SELECT
+--     coalesce(bicycle.osm_id, hiking.osm_id) AS osm_id,
+--     coalesce(bicycle.relation_id, hiking.relation_id) AS relation_id,
+--     coalesce(bicycle.member_id, hiking.member_id) AS member_id,
+--     coalesce(bicycle.geometry, hiking.geometry) AS geometry,
+--     coalesce(bicycle.route, hiking.route) AS class,
+--     coalesce(bicycle.network, hiking.network) AS network,
+--     nullif (coalesce(bicycle.name, hiking.name), '') AS name,
+--     nullif (coalesce(bicycle.symbol, hiking.symbol), '') AS symbol,
+--     nullif (coalesce(bicycle.ref, hiking.ref), '') AS ref,
+--     nullif (coalesce(bicycle.color, hiking.color), '') AS color,
+--     coalesce(bicycle.ascent, hiking.ascent)::int AS ascent,
+--     coalesce(bicycle.descent, hiking.descent)::int AS descent,
+--     coalesce(bicycle.distance, hiking.distance)::int AS distance,
+--     nullif (coalesce(bicycle.description, hiking.description), '') AS description,
+--     nullif (coalesce(bicycle.website, hiking.website), '') AS website
+-- FROM
+--     (SELECT * FROM osm_route_max_network WHERE route = 'bicycle') AS bicycle
+--     FULL OUTER JOIN (SELECT * FROM osm_route_max_network WHERE route IN ('hiking', 'foot')) AS hiking ON
+--         bicycle.member_id = hiking.member_id
+-- ;
 
 -- etldoc: osm_route_network -> osm_route_network_merge
-DROP TABLE IF EXISTS osm_route_network_merge CASCADE;
-
-CREATE TABLE IF NOT EXISTS osm_route_network_merge AS
-SELECT
-    osm_id,
-    (ST_Dump (ST_LineMerge (ST_Collect (geometry)))).geom AS geometry,
-    route as class,
-    network_level (network) as network,
-    nullif (name, '') as name,
-    nullif (ref, '') as ref,
-    nullif (symbol, '') as symbol,
-    nullif (coalesce(nullif(colour, ''), SPLIT_PART(symbol, ':', 1)), '') AS colour,
-    ascent,
-    descent,
-    distance,
-    nullif (description, '') as description,
-    nullif (website, '') as website
-FROM
-    osm_route_linestring
-GROUP BY
-    osm_id,
-    class,
-    network,
-    name,
-    ref,
-    symbol,
-    colour,
-    ascent,
-    descent,
-    distance,
-    description,
-    website,
-    -- Cluster by windows to lower time and memory required
-    (ST_XMin (geometry) / 10000)::int,
-    (ST_YMin (geometry) / 10000)::int;
+DROP MATERIALIZED VIEW IF EXISTS osm_route_network_merge CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_route_network_merge AS
+(
+SELECT osm_id,
+       geometry,
+       route AS class,
+       network,
+       name,
+       route_ref (ref, name) AS ref,
+       symbol,
+       color,
+       ascent,
+       descent,
+       coalesce(nullif (distance, 0), ST_Length(geometry)::int) AS distance,
+       description,
+       website,
+       bbox
+    FROM (
+        SELECT osm_id,
+            (ST_Dump(ST_LineMerge (ST_Collect (geometry)))).geom AS geometry,
+            route,
+            network_level (network) AS network,
+            nullif (name, '') AS name,
+            ref,
+            nullif (symbol, '') AS symbol,
+            nullif (coalesce(nullif(color, ''), SPLIT_PART(symbol, ':', 1)), '') AS color,
+            ascent,
+            descent,
+            NULL::int AS distance,
+            nullif (description, '') AS description,
+            nullif (website, '') AS website,
+            (ST_Extent(ST_Transform(geometry, 4326)))::text AS bbox
+        FROM osm_route_linestring
+        GROUP BY osm_id,
+            route,
+            network,
+            name,
+            ref,
+            symbol,
+            color,
+            ascent,
+            descent,
+            distance,
+            description,
+            website
+     ) union_route
+    ) /* DELAY_MATERIALIZED_VIEW_CREATION */;
+CREATE INDEX IF NOT EXISTS oosm_route_network_merge_geometry_idx
+    ON osm_route_network_merge USING gist (geometry);
 
 -- etldoc: osm_route_network_merge -> osm_route_network_merge_z12
 CREATE MATERIALIZED VIEW osm_route_network_merge_z12 AS (
-    SELECT
-        osm_id,
-        ST_Simplify (geometry, 30) AS geometry,
-        class,
-        network,
-        name,
-        ref,
-        symbol,
-        colour,
-        ascent,
-        descent,
-        distance,
-        description,
-        website
+    SELECT *
     FROM
         osm_route_network_merge);
 
@@ -118,66 +132,32 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z12_geometry_idx ON osm_route
 
 -- etldoc: osm_route_network_merge_z12 -> osm_route_network_merge_z11
 CREATE MATERIALIZED VIEW osm_route_network_merge_z11 AS (
-    SELECT
-        osm_id,
-        ST_Simplify (geometry, 60) AS geometry,
-        class,
-        network,
-        name,
-        ref,
-        symbol,
-        colour,
-        ascent,
-        descent,
-        distance,
-        description,
-        website
+    SELECT *
     FROM
-        osm_route_network_merge_z12);
+        osm_route_network_merge_z12
+    WHERE 
+        ST_Length(geometry) > ZRes(12)
+    );
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z11_geometry_idx ON osm_route_network_merge_z11 USING gist (geometry);
 
 -- etldoc: osm_route_network_merge_z11 -> osm_route_network_merge_z10
 CREATE MATERIALIZED VIEW osm_route_network_merge_z10 AS (
-    SELECT
-        osm_id,
-        ST_Simplify (geometry, 110) AS geometry,
-        class,
-        network,
-        name,
-        ref,
-        symbol,
-        colour,
-        ascent,
-        descent,
-        distance,
-        description,
-        website
+    SELECT *
     FROM
-        osm_route_network_merge_z11);
+        osm_route_network_merge_z11
+    WHERE 
+        ST_Length(geometry) > ZRes(11)
+    );
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z10_geometry_idx ON osm_route_network_merge_z10 USING gist (geometry);
 
 -- etldoc: osm_route_network_merge_z10 -> osm_route_network_merge_z9
 CREATE MATERIALIZED VIEW osm_route_network_merge_z9 AS (
-    SELECT
-        osm_id,
-        ST_Simplify (geometry, 200) AS geometry,
-        class,
-        network,
-        name,
-        ref,
-        symbol,
-        colour,
-        ascent,
-        descent,
-        distance,
-        description,
-        website
+    SELECT *
     FROM
         osm_route_network_merge_z10
     WHERE
-        ST_Length (geometry) > 100 AND
         network <= 4);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z9_geometry_idx ON osm_route_network_merge_z9 USING gist (geometry);
@@ -186,18 +166,19 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z9_geometry_idx ON osm_route_
 CREATE MATERIALIZED VIEW osm_route_network_merge_z8 AS (
     SELECT
         osm_id,
-        ST_Simplify (geometry, 400) AS geometry,
+        ST_Simplify(geometry, ZRes(10)) AS geometry,
         class,
         network,
         name,
         ref,
         symbol,
-        colour,
+        color,
         ascent,
         descent,
         distance,
         description,
-        website
+        website,
+        bbox
     FROM
         osm_route_network_merge_z9);
 
@@ -207,21 +188,22 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z8_geometry_idx ON osm_route_
 CREATE MATERIALIZED VIEW osm_route_network_merge_z7 AS (
     SELECT
         osm_id,
-        ST_Simplify (geometry, 800) AS geometry,
+        ST_Simplify(geometry, ZRes(9)) AS geometry,
         class,
         network,
         name,
         ref,
         symbol,
-        colour,
+        color,
         ascent,
         descent,
         distance,
         description,
-        website
+        website,
+        bbox
     FROM
         osm_route_network_merge_z8
-    WHERE network <= 3);
+    WHERE network <= 3 AND name IS NOT NULL);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z7_geometry_idx ON osm_route_network_merge_z7 USING gist (geometry);
 
@@ -229,20 +211,22 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z7_geometry_idx ON osm_route_
 CREATE MATERIALIZED VIEW osm_route_network_merge_z6 AS (
     SELECT
         osm_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        ST_Simplify(geometry, ZRes(8)) AS geometry,
         class,
         network,
         name,
         ref,
         symbol,
-        colour,
+        color,
         ascent,
         descent,
         distance,
         description,
-        website
+        website,
+        bbox
     FROM
-        osm_route_network_merge_z7);
+        osm_route_network_merge_z7
+    WHERE network <= 2);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_network_merge_z6 USING gist (geometry);
 
@@ -250,22 +234,23 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z6_geometry_idx ON osm_route_
 CREATE MATERIALIZED VIEW osm_route_network_merge_z5 AS (
     SELECT
         osm_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        ST_Simplify(geometry, ZRes(7)) AS geometry,
         class,
         network,
         name,
         ref,
         symbol,
-        colour,
+        color,
         ascent,
         descent,
         distance,
         description,
-        website
+        website,
+        bbox
     FROM
         osm_route_network_merge_z6
     WHERE
-        network <= 2);
+        network <= 2 AND name IS NOT NULL);
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z5_geometry_idx ON osm_route_network_merge_z5 USING gist (geometry);
 
@@ -273,18 +258,19 @@ CREATE INDEX IF NOT EXISTS osm_route_network_merge_z5_geometry_idx ON osm_route_
 CREATE MATERIALIZED VIEW osm_route_network_merge_z4 AS (
     SELECT
         osm_id,
-        ST_Simplify (geometry, 1600) AS geometry,
+        ST_Simplify(geometry, ZRes(6)) AS geometry,
         class,
         network,
         name,
         ref,
         symbol,
-        colour,
+        color,
         ascent,
         descent,
         distance,
         description,
-        website
+        website,
+        bbox
     FROM
         osm_route_network_merge_z5
     WHERE
@@ -292,7 +278,7 @@ CREATE MATERIALIZED VIEW osm_route_network_merge_z4 AS (
 
 CREATE INDEX IF NOT EXISTS osm_route_network_merge_z4_geometry_idx ON osm_route_network_merge_z4 USING gist (geometry);
 
--- etldoc: layer_route[shape=record fillcolour=lightpink, style="rounded,filled",
+-- etldoc: layer_route[shape=record fillcolor=lightpink, style="rounded,filled",
 -- etldoc:     label="<sql> layer_route |<z6> z6 |<z7> z7 |<z8> z8 |<z9> z9 |<z10> z10 |<z11> z11 |<z12> z12|<z13> z13|<z14_> z14+" ] ;
 
 DROP FUNCTION IF EXISTS layer_route(geometry, integer) CASCADE;
@@ -309,12 +295,13 @@ CREATE OR REPLACE FUNCTION layer_route (
             name text,
             ref text,
             symbol text,
-            colour text,
+            color text,
             ascent integer,
             descent integer,
             distance integer,
             description text,
-            website text
+            website text,
+            bbox text
         )
         AS $$
     SELECT

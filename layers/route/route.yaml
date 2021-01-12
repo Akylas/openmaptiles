@@ -8,6 +8,8 @@ layer:
     osm_id: osm_id
     osmid: osm_id
     symbol: symbol
+    bbox: bbox
+    description: description
     class:
       description: |
           correspond to [route](https://wiki.openstreetmap.org/wiki/Key:route?uselang=en-US) key
@@ -20,7 +22,7 @@ layer:
     ref:
       description: |
           Ref of the major network.
-    colour:
+    color:
       description: |
           optional color
     ascent:
@@ -40,7 +42,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, osm_id AS osmid, geometry, class, network, name, ref, symbol, colour, ascent, descent, distance, description, website FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT osm_id, osm_id AS osmid, geometry, class, network, name, ref, symbol, color, ascent, descent, distance, description, website, bbox FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:
