@@ -2,7 +2,7 @@ DO
 $$
     BEGIN
         IF NOT EXISTS(SELECT 1 FROM pg_type WHERE typname = 'city_place') THEN
-        CREATE TYPE city_place AS ENUM ('city', 'town', 'village', 'hamlet', 'suburb', 'neighbourhood', 'isolated_dwelling','locality');
+            CREATE TYPE city_place AS enum ('city', 'town', 'village', 'hamlet', 'suburb', 'quarter', 'neighbourhood', 'isolated_dwelling');
         END IF;
     END
 $$;

@@ -156,6 +156,7 @@ tables:
       - village
       - hamlet
       - suburb
+      - quarter
       - neighbourhood
       - isolated_dwelling
       - locality

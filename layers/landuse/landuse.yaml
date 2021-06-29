@@ -39,6 +39,7 @@ layer:
       - theme_park
       - zoo
       - suburb
+      - quarter
       - neighbourhood
     name: The OSM [`name`](http://wiki.openstreetmap.org/wiki/Key:name) value of the aerodrome.
   datasource:

@@ -33,10 +33,11 @@ SELECT osm_id,
            WHEN length(coalesce(ref, '')) > 0
                THEN 'road'
            END AS network,
-       highway_class(highway, '', construction) AS class,
+       highway_class(highway, '', subclass) AS class,
        CASE
-          WHEN highway IS NOT NULL AND highway_class(highway, '', construction) in ('path', 'piste','aerialway')
+           WHEN highway IS NOT NULL AND highway_class(highway, '', subclass) in ('path', 'piste','aerialway')
                THEN highway
+           ELSE subclass
            END AS subclass,
        brunnel,
        NULLIF(layer, 0) AS layer,
@@ -89,7 +90,7 @@ FROM (
                 "tags",
                 ref,
                 highway,
-                construction,
+                subclass,
                 brunnel,
                 network,
                 z_order,
@@ -99,7 +100,7 @@ FROM (
          FROM osm_transportation_name_linestring
          WHERE zoom_level = 12
            AND LineLabel(zoom_level, COALESCE(name, ref), geometry)
-           AND highway_class(highway, '', construction) NOT IN ('minor', 'track', 'path')
+           AND highway_class(highway, '', subclass) NOT IN ('minor', 'track', 'path')
            AND NOT highway_is_link(highway)
          UNION ALL
 
@@ -110,7 +111,7 @@ FROM (
                 "tags",
                 ref,
                 highway,
-                construction,
+                subclass,
                 brunnel,
                 network,
                 z_order,
@@ -120,7 +121,7 @@ FROM (
          FROM osm_transportation_name_linestring
          WHERE zoom_level = 13
            AND LineLabel(zoom_level, COALESCE(name, ref), geometry)
-           AND highway_class(highway, '', construction) NOT IN ('track', 'path')
+           AND highway_class(highway, '', subclass) NOT IN ('track', 'path')
          UNION ALL
 
          -- etldoc: osm_transportation_name_linestring ->  layer_transportation_name:z14_
@@ -130,7 +131,7 @@ FROM (
                 "tags",
                 ref,
                 highway,
-                construction,
+                subclass,
                 brunnel,
                 network,
                 z_order,
@@ -139,6 +140,32 @@ FROM (
                 indoor
          FROM osm_transportation_name_linestring
          WHERE zoom_level >= 14
+         UNION ALL
+
+         -- etldoc: osm_highway_point ->  layer_transportation_name:z10
+         SELECT
+		p.geometry,
+                p.osm_id,
+                p.name,
+                p.name_en,
+                p.name_de,
+                p.tags,
+                p.tags->'ref',
+                (
+                  SELECT highest_highway(l.tags->'highway')
+                    FROM osm_highway_linestring l
+                    WHERE ST_Intersects(p.geometry,l.geometry)
+                ) AS class,
+                'junction'::text AS subclass,
+                NULL AS brunnel,
+                NULL AS network,
+                z_order,
+                layer,
+                NULL::int AS level,
+                NULL::boolean AS indoor
+         FROM osm_highway_point p
+         WHERE highway = 'motorway_junction' AND zoom_level >= 10
+
      ) AS zoom_levels
 WHERE geometry && bbox
 ORDER BY z_order ASC;

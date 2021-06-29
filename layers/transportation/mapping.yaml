@@ -48,18 +48,6 @@ generalized_tables:
     sql_filter: ST_IsValid(geometry)
     tolerance: ZRES13
 
-# etldoc: osm_highway_linestring_gen_z10 -> osm_highway_linestring_gen_z9
-  highway_linestring_gen_z9:
-    source: highway_linestring_gen_z10
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link')) AND NOT is_area
-    tolerance: ZRES10
-
-# etldoc: osm_highway_linestring_gen_z11 -> osm_highway_linestring_gen_z10
-  highway_linestring_gen_z10:
-    source: highway_linestring_gen_z11
-    sql_filter: (highway IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link') OR highway = 'construction' AND construction IN ('motorway', 'trunk', 'primary', 'secondary', 'motorway_link', 'trunk_link', 'primary_link', 'secondary_link')) AND NOT is_area
-    tolerance: ZRES11
-
 # etldoc: osm_highway_linestring -> osm_highway_linestring_gen_z11
   highway_linestring_gen_z11:
     source: highway_linestring
@@ -479,6 +467,32 @@ tables:
       - bridge
       - pier
 
+  # etldoc: imposm3 -> highway_point
+  highway_point:
+    type: point
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: highway
+      key: highway
+      type: string
+    - name: z_order
+      type: wayzorder
+    - *layer
+    - *level
+    - *name
+    - name: tags
+      type: hstore_tags
+    - name: ref
+      key: ref
+      type: string
+    mapping:
+      highway:
+      - motorway_junction
+
+# TODO: Future table for joining networks
 # etldoc: imposm3 -> osm_route_member
   route_member:
     type: relation_member

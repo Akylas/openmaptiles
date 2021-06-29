@@ -71,6 +71,10 @@ To work on OpenMapTiles you need Docker.
 - Install [Docker](https://docs.docker.com/engine/installation/). Minimum version is 1.12.3+.
 - Install [Docker Compose](https://docs.docker.com/compose/install/). Minimum version is 1.7.1+.
 
+### Microsoft Windows Subsystem for Linux (WSL)
+
+Please use Linux `/home/user/` directory, not Windows e.g. `/mnt/c` directory.
+
 ### Build
 
 Build the tileset.
@@ -126,6 +130,13 @@ make import-wikidata
 ```
 
 ### Work on Layers
+Each time you modify a layer's `mapping.yaml` file or add new OSM tags, run `make` and `make import-osm` to recreate tables (potentially with additional data) in PostgreSQL. With the new data, there can be new Wikidata records also.
+```
+make clean
+make
+make import-osm
+make import-wikidata
+```
 
 Each time you modify layer SQL code run `make` and `make import-sql`.
 
