@@ -2,13 +2,13 @@ layer:
   id: "route"
   description: |
       **route** contains route for bicycle and hiking.
-  buffer_size: 4
+  buffer_size: 0
   srs: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over
   fields:
     osm_id: osm_id
     osmid: osm_id
     symbol: symbol
-    bbox: bbox
+    extent: extent
     description: description
     class:
       description: |
@@ -24,7 +24,10 @@ layer:
           Ref of the major network.
     color:
       description: |
-          optional color
+          optional way color
+    textcolor:
+      description: |
+          optional text color
     ascent:
       description: |
           The ascent covered by a route (default units are metres; specify others explicitly). If a route has start and end point at different altitude use descent too. 
@@ -42,7 +45,7 @@ layer:
     key_field: osm_id
     key_field_as_attribute: no
     srid: 900913
-    query: (SELECT osm_id, osm_id AS osmid, geometry, class, network, name, ref, symbol, color, ascent, descent, distance, description, website, bbox FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT osm_id, osm_id AS osmid, geometry, class, network, name, ref, symbol, textcolor, color, ascent, descent, distance, description, website, extent FROM layer_route(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./layer.sql
 datasources:
