@@ -67,7 +67,7 @@ FROM (
         WHERE
             geometry && bbox
             AND zoom_level BETWEEN 11 AND 12
-            AND (subclass IN ('alpine_hut', 'wilderness_hut')
+            AND (subclass IN ('alpine_hut', 'wilderness_hut', 'camp_site')
                 OR poi_class (subclass, mapping_key) IN ('spring'))
         UNION ALL
          -- etldoc: osm_poi_point ->  layer_poi:z12
