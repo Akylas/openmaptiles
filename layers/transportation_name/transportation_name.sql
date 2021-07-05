@@ -147,8 +147,6 @@ FROM (
 		p.geometry,
                 p.osm_id,
                 p.name,
-                p.name_en,
-                p.name_de,
                 p.tags,
                 p.tags->'ref',
                 (
