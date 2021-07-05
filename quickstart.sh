@@ -288,7 +288,7 @@ echo "      : See other MVT tools : https://github.com/mapbox/awesome-vector-til
 echo "      :  "
 echo "      : You will see a lot of deprecated warning in the log! This is normal!  "
 echo "      :    like :  Mapnik LOG>  ... is deprecated and will be removed in Mapnik 4.x ... "
-make generate-tiles
+make generate-tiles-pg
 
 echo " "
 echo "-------------------------------------------------------------------------------------"
