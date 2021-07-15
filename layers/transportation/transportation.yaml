@@ -190,9 +190,6 @@ layer:
     tracktype:
       description: |
           Values of [`piste:tracktype`](https://wiki.openstreetmap.org/wiki/Key:piste:tracktype) for pistes.
-    grooming:
-      description: |
-          Values of [`piste:grooming`](https://wiki.openstreetmap.org/wiki/Key:piste:grooming) for pistes.
     type:
       description: |
           Values of [`piste:type`](https://wiki.openstreetmap.org/wiki/Key:piste:grtypeooming) for pistes.
@@ -205,7 +202,7 @@ layer:
   datasource:
     geometry_field: geometry
     srid: 900913
-    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name, surface, tracktype, grooming, type, difficulty FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
+    query: (SELECT geometry, class, subclass, oneway, ramp, brunnel, service, layer, level, indoor, bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name, surface, tracktype, type, difficulty FROM layer_transportation(!bbox!, z(!scale_denominator!))) AS t
 schema:
   - ./class.sql
   - ./update_transportation_merge.sql

@@ -11,7 +11,7 @@ $$ LANGUAGE SQL IMMUTABLE
 CREATE OR REPLACE FUNCTION layer_transportation(bbox geometry, zoom_level int)
 RETURNS TABLE(osm_id bigint, geometry geometry, class text, subclass text,
 ramp int, oneway int, brunnel TEXT, service TEXT, tracktype TEXT, layer INT, level INT,
-indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT, mtb_scale_uphill TEXT, mtb_type TEXT, mtb_name TEXT, surface TEXT, grooming TEXT, type TEXT, difficulty TEXT) AS $$
+indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT, mtb_scale_uphill TEXT, mtb_type TEXT, mtb_name TEXT, surface TEXT, type TEXT, difficulty TEXT) AS $$
     SELECT
         osm_id, geometry,
        CASE
@@ -48,7 +48,6 @@ indoor INT, bicycle TEXT, foot TEXT, horse TEXT, mtb_scale TEXT, sac_scale TEXT,
         NULLIF(mtb_type, '') AS mtb_type,
         NULLIF(mtb_name, '') AS mtb_name,
         NULLIF(surface, '') AS surface,
-        NULLIF(grooming, '') AS grooming,
         NULLIF(type, '') AS type,
         NULLIF(difficulty, '') AS difficulty
 FROM (
@@ -80,7 +79,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type,
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -116,7 +114,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -152,7 +149,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -188,7 +184,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -224,7 +219,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -260,7 +254,6 @@ FROM (
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -295,7 +288,6 @@ FROM osm_transportation_merge_linestring_gen_z9
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order
@@ -331,7 +323,6 @@ FROM osm_transportation_merge_linestring_gen_z10
                 NULL as mtb_scale_uphill,
                 NULL as mtb_type,
                 NULL as mtb_name,
-                NULL as grooming,
                 NULL as type,
                 NULL as difficulty,
                 NULL AS surface,
@@ -363,7 +354,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             CASE WHEN highway = 'track' THEN "tracktype" END AS "tracktype",
                 CASE WHEN highway IN ('footway', 'steps') THEN indoor END AS indoor,
             bicycle, foot, horse, mtb_scale, sac_scale, mtb_scale_uphill, mtb_type, mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
                 surface_value(surface) AS "surface",
                 z_order
          FROM osm_highway_linestring
@@ -405,7 +396,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             NULL::int AS layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL as surface, z_order
          FROM osm_railway_linestring_gen_z8
          WHERE zoom_level = 8
@@ -431,7 +422,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_railway_linestring_gen_z9
          WHERE zoom_level = 9
@@ -449,7 +440,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_railway_linestring_gen_z10
          WHERE zoom_level = 10
@@ -466,7 +457,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL as surface, z_order
          FROM osm_railway_linestring_gen_z11
          WHERE zoom_level = 11
@@ -483,7 +474,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL as surface, z_order
          FROM osm_railway_linestring_gen_z12
          WHERE zoom_level = 12
@@ -501,7 +492,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL as surface, z_order
          FROM osm_railway_linestring
          WHERE zoom_level = 13
@@ -518,7 +509,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_aerialway_linestring_gen_z12
          WHERE zoom_level = 12
@@ -534,7 +525,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_aerialway_linestring
          WHERE zoom_level >= 13
@@ -549,7 +540,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
         FROM osm_skilift_linestring_gen1
         WHERE zoom_level = 13
@@ -565,7 +556,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
         FROM osm_skilift_linestring
         WHERE zoom_level >= 14
@@ -580,7 +571,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            grooming, type, difficulty,
+            type, difficulty,
             NULL AS surface, z_order
         FROM osm_skipiste_linestring
         WHERE zoom_level >= 14
@@ -595,7 +586,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_shipway_linestring_gen_z11
          WHERE zoom_level = 11
@@ -610,7 +601,7 @@ FROM osm_transportation_merge_linestring_gen_z10
             layer, NULL::int AS level, NULL::text AS tracktype, NULL::boolean AS indoor,
             NULL as bicycle, NULL as foot, NULL as horse, NULL as mtb_scale, NULL as sac_scale,
             NULL as mtb_scale_uphill, NULL as mtb_type, NULL as mtb_name,
-            NULL AS grooming, NULL AS type, NULL as difficulty,
+            NULL AS type, NULL as difficulty,
             NULL AS surface, z_order
          FROM osm_shipway_linestring_gen_z12
          WHERE zoom_level = 12
@@ -646,7 +637,6 @@ FROM osm_transportation_merge_linestring_gen_z10
             NULL as mtb_scale_uphill, 
             NULL as mtb_type, 
             NULL as mtb_name,
-            NULL AS grooming, 
             NULL AS type, 
             NULL as difficulty,
             NULL AS surface, z_order
@@ -690,7 +680,6 @@ FROM osm_transportation_merge_linestring_gen_z10
                 NULL as mtb_scale_uphill, 
                 NULL as mtb_type, 
                 NULL as mtb_name,
-                NULL AS grooming, 
                 NULL AS type, 
                 NULL as difficulty,
                 NULL AS surface, z_order

@@ -11,9 +11,6 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - arts_centre
   - bank
   - bar
-  - bbq
-  - bicycle_parking
-  - bicycle_rental
   - biergarten
   - bus_station
   - cafe
@@ -37,7 +34,6 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - kindergarten
   - library
   - marketplace
-  - motorcycle_parking
   - nightclub
   - nursing_home
   - parking
@@ -52,8 +48,6 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - school
   - shelter
   - swimming_pool
-  - taxi
-  - telephone
   - theatre
   - toilets
   - townhall
