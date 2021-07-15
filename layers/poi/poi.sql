@@ -97,7 +97,7 @@ FROM (
             geometry && bbox
            AND zoom_level >= 14
             AND (subclass != 'information'
-                OR (information != 'board'
+                OR (information IN ('office', 'visitor_centre')
                     AND NULLIF (name, '') IS NOT NULL))
             AND (subclass != 'viewpoint'
                 OR (NULLIF (name, '') IS NOT NULL))
