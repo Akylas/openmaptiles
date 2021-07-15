@@ -28,7 +28,7 @@ SELECT
     tags,
     ele::int,
         CASE WHEN summitcross = TRUE THEN
-            1
+            1 ELSE NULL
         END AS summitcross,
     rank::int
 FROM (

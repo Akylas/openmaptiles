@@ -43,12 +43,14 @@ CREATE OR REPLACE FUNCTION layer_poi (
             subclass
            END AS subclass,
         NULL::text AS historic,
-       agg_stop,
+       CASE WHEN agg_stop > 1 THEN
+            agg_stop ELSE NULL
+        END AS agg_stop,
        NULLIF(layer, 0) AS layer,
        "level",
         capacity,
         CASE WHEN indoor = TRUE THEN
-            1
+            1 ELSE NULL
         END AS indoor,
         substring(ele FROM E'^(-?\\d+)(\\D|$)')::int AS ele,
         row_number() OVER (PARTITION BY LabelGrid (geometry, 100 * pixel_width) ORDER BY CASE WHEN name IS NULL THEN

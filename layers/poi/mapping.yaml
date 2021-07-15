@@ -47,7 +47,6 @@ def_poi_mapping_amenity: &poi_mapping_amenity
   - restaurant
   - school
   - shelter
-  - swimming_pool
   - theatre
   - toilets
   - townhall
@@ -56,14 +55,8 @@ def_poi_mapping_amenity: &poi_mapping_amenity
 
 # barrier values , see http://taginfo.openstreetmap.org/keys/barrier#values
 def_poi_mapping_barrier: &poi_mapping_barrier
-  - bollard
   - border_control
-  - cycle_barrier
-  - gate
-  - lift_gate
   - sally_port
-  - stile
-  - toll_booth
 
 # building values , see http://taginfo.openstreetmap.org/keys/building#values
 def_poi_mapping_building: &poi_mapping_building
@@ -99,7 +92,6 @@ def_poi_mapping_leisure: &poi_mapping_leisure
   - pitch
   - stadium
   - swimming_area
-  - swimming_pool
   - water_park
 
 # office values , see http://taginfo.openstreetmap.org/keys/office#values
